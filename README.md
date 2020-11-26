@@ -16,9 +16,11 @@ Many other JSON libraries requiure creating POJO classes which mirror the object
 ### Powerful Search Syntax
 The provided search syntax can search through the entire JSON tree based upon the specified pathing and return every single JSON element which matches that path specification.
 
-The special syntax is structured quite similarly to Java's package formatting, with periods ('.') and brackets ('\[', '\]') acting as separators for JSON element names and array indices, respectively. For example, "object.variable" finds the element named "object" and accesses its internal element named "variable", and "array\[index\]" finds the element named "array" and accesses the element at index "index" in the array.
+The special syntax is structured quite similarly to Java's package formatting, with periods ('.') and brackets ('\[', '\]') acting as separators for JSON element names and array indices, respectively. For example, "object.variable" finds the element named "object" and accesses its internal element named "variable", and "array\[index\]" finds the element named "array" and accesses the element at index "index" in the array. Periods and brackets are actually treated identically by the search parser, but each should only be used for its given use case for readability.
 
-In addition to basic text matching, there are also 2 special characters: asterisks ('\*') and question marks ('?'). Asterisks are wildcard characters which designate one miscellaneous term in the search. For example, "a.\*.b" can match "a.c.b" and "a.d.b" but not "a.b" or "a.c.d.b". On the other hand, question marks are multi-level (recursive) wildcard characters. For example, "a.?.b" can match "a.b", "a.c.b", "a.c.d.b", and more.
+In addition to basic text matching, there are also 2 special characters: asterisks ('\*') and question marks ('?').
+* Asterisks are wildcard characters which designate one miscellaneous term in the search. For example, "a.\*.b" can match "a.c.b" and "a.d.b" but not "a.b" or "a.c.d.b".
+* On the other hand, question marks are multi-level (recursive) wildcard characters. For example, "a.?.b" can match "a.b", "a.c.b", "a.c.d.b", and more.
 
 ### Scanning and Parsing Speed
 Although not the fastest library around by any stretch of the imagination, this library does provide significant speed, with a scanner that can tokenize the input file at roughly the same speed as a BufferedReader can provide new lines (in *most* JSON files). Additionally, the JSON parser is fast, though not as much as the scanner. There are currently plans to implement a non-recursive parser, which would theoretically speed up the parsing process.
