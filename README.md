@@ -28,4 +28,4 @@ Although not the fastest library around by any stretch of the imagination, this 
 ## How to Use
 All of the necessary JSON stuff can be found in "[me.utk.json_parser.json](https://github.com/utk003/JSON-Parser/tree/main/src/me/utk/json_parser/json)". The parser itself is "[me.utk.json_parser.json.JSONParser.java](https://github.com/utk003/JSON-Parser/blob/main/src/me/utk/json_parser/json/JSONParser.java)" Some methods might not be fully implemented, so beware (*TODO fix that*). Also, JavaDoc is planned, and currently nonexistant.
 
-Also, "[src/Main.java](https://github.com/utk003/JSON-Parser/blob/main/src/Main.java)" has some benchmarking methods for the scanner and parser. The scanner is quite fast, but the parser is extremely slow. A non-recursive parser was in developement to remedy that issue, but it is not yet complete.
+Also, "[src/Main.java](https://github.com/utk003/JSON-Parser/blob/main/src/Main.java)" has some benchmarking methods for the scanner and parser. The scanner is quite fast, but the parser is extremely slow in comparison. A non-recursive parser is in developement to remedy this issue, but it is not yet complete.
