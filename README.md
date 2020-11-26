@@ -1,11 +1,13 @@
 # JSON Parser
-A collection of Java classes for parsing (and searching through) JSON.
+A collection of Java classes for parsing (and searching through) [JSON](https://www.json.org/json-en.html).
 
 ## Advantages
 This library provides many advantages for use over other libraries such as [GSON](https://github.com/google/gson) and [Jackson](https://github.com/FasterXML/jackson).
+
 1. Easy use with no additional class creation necessary
 2. A powerful, semi-regex-style, search syntax for easy accesss to specific files
 3. Speed in scanning and parsing JSON
+
 This library should be prefered for projects which require simple, unencumbered JSON parsing or an easily searchable output JSON structure. However, other use cases may also see improvements over other libraries depending on the specifics of the application.
 
 ### Ease of Use
