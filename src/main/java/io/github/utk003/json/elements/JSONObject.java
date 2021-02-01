@@ -24,7 +24,6 @@
 
 package io.github.utk003.json.elements;
 
-import io.github.utk003.json.JSONParser;
 import io.github.utk003.json.Scanner;
 import io.github.utk003.util.misc.Verify;
 
@@ -62,7 +61,7 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
         return Collections.unmodifiableCollection(ELEMENTS.values());
     }
 
-    public static JSONObject parseObject(Scanner s) {
+    static JSONObject parseObject(Scanner s) {
         JSONObject obj = new JSONObject();
 
         String token;
@@ -75,15 +74,19 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
             Verify.requireTrue(s.advance().equals(":"));
 
             s.advance(); // load first token of value
-            obj.ELEMENTS.put(token.substring(1, token.length() - 1), JSONParser.parseRecursive(s));
+            obj.ELEMENTS.put(token.substring(1, token.length() - 1), JSONValue.parseJSON(s));
         } while (s.advance().equals(","));
         return obj;
     }
 
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        if (index == tokenizedPath.length)
+            return Collections.singleton(this);
+
         PathTrace trace = tokenizedPath[index];
-        Verify.requireNotNull(trace.KEY);
+        if (trace.KEY == null)
+            return Collections.emptySet();
 
         index++;
 
@@ -120,5 +123,23 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
 
         depth--;
         outputString(out, "}", depth);
+    }
+
+    @Override
+    public int hashCode() {
+        return ELEMENTS.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof JSONObject && ELEMENTS.equals(((JSONObject) obj).ELEMENTS);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, JSONValue> element : ELEMENTS.entrySet())
+            builder.append(",\"").append(element.getKey()).append("\":").append(element.getValue());
+        return "{" + (builder.length() == 0 ? "" : builder.substring(1)) + "}";
     }
 }

@@ -29,23 +29,24 @@ import io.github.utk003.json.Scanner;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 public class JSONPrimitive extends JSONValue {
-    private final Boolean value;
+    private final Boolean VALUE;
 
     public JSONPrimitive(Boolean val) {
         super(ValueType.PRIMITIVE);
-        value = val;
+        VALUE = val;
     }
     public JSONPrimitive(String s) {
         this("true".equals(s) ? (Boolean) true : "false".equals(s) ? false : null);
     }
 
     public Boolean getValue() {
-        return value;
+        return VALUE;
     }
 
-    public static JSONPrimitive parsePrimitive(Scanner s) {
+    static JSONPrimitive parsePrimitive(Scanner s) {
         return new JSONPrimitive(s.current());
     }
 
@@ -56,6 +57,21 @@ public class JSONPrimitive extends JSONValue {
 
     @Override
     protected void print(PrintStream out, int depth) {
-        outputString(out, "" + value);
+        outputString(out, "" + VALUE);
+    }
+
+    @Override
+    public int hashCode() {
+        return VALUE == null ? 0 : VALUE.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof JSONPrimitive && Objects.equals(VALUE, ((JSONPrimitive) obj).VALUE);
+    }
+
+    @Override
+    public String toString() {
+        return "" + VALUE;
     }
 }

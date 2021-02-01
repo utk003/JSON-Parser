@@ -30,33 +30,13 @@ import java.io.InputStream;
 import java.util.Stack;
 
 public class JSONParser {
-    public static JSONValue parse(InputStream source) {
-        Scanner scanner = new Scanner(source);
-        return parseRecursive(scanner);
+    public static JSONValue parseRecursive(InputStream source) {
+        return JSONValue.parseJSON(new Scanner(source));
     }
 
-    public static JSONValue parseRecursive(Scanner s) {
-        char c = s.current().charAt(0);
-        switch (c) {
-            case '{':
-                return JSONObject.parseObject(s);
+    public static JSONValue parseNonRecursive(InputStream source) {
+        Scanner s = new Scanner(source);
 
-            case '[':
-                return JSONArray.parseArray(s);
-
-            case '"':
-                return JSONString.parseString(s);
-
-            default:
-                if (c == '-' || '0' <= c && c <= '9')
-                    return JSONNumber.parseNumber(s);
-                else
-                    return JSONPrimitive.parsePrimitive(s);
-        }
-    }
-
-    // I'm not sure that this method is completely functional yet
-    public static JSONValue parseNonRecursive(Scanner s) {
         Stack<JSONValue> stack = new Stack<>();
         Stack<String> strStack = new Stack<>();
 

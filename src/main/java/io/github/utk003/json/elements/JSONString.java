@@ -32,11 +32,11 @@ import java.util.Collections;
 import java.util.Iterator;
 
 public class JSONString extends JSONValue {
-    private final String string;
+    private final String STRING;
 
     public JSONString(String str) {
         super(ValueType.STRING);
-        string = preprocess(str);
+        STRING = preprocess(str);
     }
 
     public static String preprocess(String s) {
@@ -103,11 +103,11 @@ public class JSONString extends JSONValue {
         throw new IllegalArgumentException("'" + c + "' is not a valid hex character");
     }
 
-    public String getValue() {
-        return string;
+    public String getString() {
+        return STRING;
     }
 
-    public static JSONString parseString(Scanner s) {
+    static JSONString parseString(Scanner s) {
         String token = s.current();
         return new JSONString(token.substring(1, token.length() - 1));
     }
@@ -120,7 +120,22 @@ public class JSONString extends JSONValue {
     @Override
     protected void print(PrintStream out, int depth) {
         outputString(out, "\"");
-        outputString(out, string);
+        outputString(out, STRING);
         outputString(out, "\"");
+    }
+
+    @Override
+    public int hashCode() {
+        return STRING.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof JSONString && STRING.equals(((JSONString) obj).STRING);
+    }
+
+    @Override
+    public String toString() {
+        return "\"" + STRING + "\"";
     }
 }

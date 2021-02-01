@@ -31,21 +31,21 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class JSONNumber extends JSONValue {
-    private final Number value;
+    private final Number NUMBER;
 
     public JSONNumber(String s) {
-        this(s.contains("e") || s.contains("E") || s.contains(".") ? Double.parseDouble(s) : Long.parseLong(s));
+        this(s.contains("e") || s.contains("E") || s.contains(".") ? (Number) Double.parseDouble(s) : (Number) Long.parseLong(s));
     }
     public JSONNumber(Number val) {
         super(ValueType.NUMBER);
-        value = val;
+        NUMBER = val;
     }
 
-    public Number getValue() {
-        return value;
+    public Number getNumber() {
+        return NUMBER;
     }
 
-    public static JSONNumber parseNumber(Scanner s) {
+    static JSONNumber parseNumber(Scanner s) {
         return new JSONNumber(s.current());
     }
 
@@ -56,6 +56,21 @@ public class JSONNumber extends JSONValue {
 
     @Override
     protected void print(PrintStream out, int depth) {
-        outputString(out, "" + value);
+        outputString(out, "" + NUMBER);
+    }
+
+    @Override
+    public int hashCode() {
+        return NUMBER.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof JSONNumber && NUMBER.equals(((JSONNumber) obj).NUMBER);
+    }
+
+    @Override
+    public String toString() {
+        return "" + NUMBER;
     }
 }

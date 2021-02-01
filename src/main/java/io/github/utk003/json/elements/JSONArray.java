@@ -24,7 +24,6 @@
 
 package io.github.utk003.json.elements;
 
-import io.github.utk003.json.JSONParser;
 import io.github.utk003.json.Scanner;
 import io.github.utk003.util.misc.Verify;
 
@@ -57,7 +56,7 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
 
     @Override
     public void modifyElement(Integer index, JSONValue obj) {
-        if (index == numElements()) ELEMENTS.add(obj);
+        if (index == null || index == numElements()) ELEMENTS.add(obj);
         else ELEMENTS.set(index, obj);
     }
     @Override
@@ -69,21 +68,25 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
         return Collections.unmodifiableList(ELEMENTS);
     }
 
-    public static JSONArray parseArray(Scanner s) {
+    static JSONArray parseArray(Scanner s) {
         JSONArray obj = new JSONArray();
         do {
             if (s.advance().equals("]"))
                 break;
 
-            obj.ELEMENTS.add(JSONParser.parseRecursive(s));
+            obj.ELEMENTS.add(JSONValue.parseJSON(s));
         } while (s.advance().equals(","));
         return obj;
     }
 
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        if (index == tokenizedPath.length)
+            return Collections.singleton(this);
+
         PathTrace trace = tokenizedPath[index];
-        Verify.requireNull(trace.KEY);
+        if (trace.KEY != null)
+            return Collections.emptySet();
 
         index++;
 
@@ -115,5 +118,24 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
 
         depth--;
         outputString(out, "]", depth);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return ELEMENTS.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof JSONArray && ELEMENTS.equals(((JSONArray) obj).ELEMENTS);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (JSONValue element : ELEMENTS)
+            builder.append(",").append(element);
+        return "[" + (builder.length() == 0 ? "" : builder.substring(1)) + "]";
     }
 }

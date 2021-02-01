@@ -25,6 +25,7 @@
 package io.github.utk003.json.elements;
 
 import com.sun.istack.internal.NotNull;
+import io.github.utk003.json.Scanner;
 import io.github.utk003.util.misc.Verify;
 
 import java.io.PrintStream;
@@ -54,6 +55,26 @@ public abstract class JSONValue {
                 INDEX = key.equals("*") ? -1 : Integer.parseInt(key);
                 KEY = null;
             }
+        }
+    }
+
+    public static JSONValue parseJSON(Scanner s) {
+        char c = s.current().charAt(0);
+        switch (c) {
+            case '{':
+                return JSONObject.parseObject(s);
+
+            case '[':
+                return JSONArray.parseArray(s);
+
+            case '"':
+                return JSONString.parseString(s);
+
+            default:
+                if (c == '-' || '0' <= c && c <= '9')
+                    return JSONNumber.parseNumber(s);
+                else
+                    return JSONPrimitive.parsePrimitive(s);
         }
     }
 
@@ -101,4 +122,13 @@ public abstract class JSONValue {
     }
 
     protected abstract void print(PrintStream out, int depth);
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract String toString();
 }
