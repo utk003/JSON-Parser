@@ -22,53 +22,40 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-import me.utk.json_parser.json.JSONParser;
-import me.utk.json_parser.json.elements.JSONValue;
-import me.utk.json_parser.scanner.Scanner;
+package io.github.utk003.json.elements;
 
-import java.io.*;
+import io.github.utk003.json.Scanner;
 
-public class Main {
-    private static long time;
-    private static void markStartTime() {
-        time = System.nanoTime();
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Collections;
+
+public class JSONNumber extends JSONValue {
+    private final Number value;
+
+    public JSONNumber(String s) {
+        this(s.contains("e") || s.contains("E") || s.contains(".") ? Double.parseDouble(s) : Long.parseLong(s));
     }
-    private static long readAndPrintTime(String message) {
-        long delta = System.nanoTime() - time;
-        if (message != null) {
-            System.out.println(message + ": " + delta / 1_000_000.0 + " ms");
-            System.out.println(message + ": " + delta / 1_000_000_000.0 + " s");
-        }
-        return delta;
-    }
-
-    public static void main(String[] args) throws IOException {
-        String fileName = "test.json";
-        JSONValue json = JSONParser.parse(new FileInputStream(fileName));
+    public JSONNumber(Number val) {
+        super(ValueType.NUMBER);
+        value = val;
     }
 
-    private static void scanningBenchmark(String file) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String s;
-        char[] arr;
-        markStartTime();
-        while ((s = br.readLine()) != null) {
-            arr = s.toCharArray();
-            for (char c : arr) ;
-        }
-        readAndPrintTime("Raw BufferedReader Input");
+    public Number getValue() {
+        return value;
+    }
 
-        System.out.println();
+    public static JSONNumber parseNumber(Scanner s) {
+        return new JSONNumber(s.current());
+    }
 
-        Scanner sc = new Scanner(new FileInputStream(file));
-        markStartTime();
-        while (sc.hasMore())
-            sc.advance();
-        long t = readAndPrintTime("Scanner-Tokenized Input");
+    @Override
+    public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        return index == tokenizedPath.length ? Collections.singleton(this) : Collections.emptySet();
+    }
 
-        System.out.println();
-
-        System.out.println("Number of tokens: " + sc.tokensPassed());
-        System.out.println("Time per token: " + t / 1000.0 / sc.tokensPassed() + " μs (microseconds)");
+    @Override
+    protected void print(PrintStream out, int depth) {
+        outputString(out, "" + value);
     }
 }

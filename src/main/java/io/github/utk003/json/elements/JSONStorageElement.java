@@ -22,52 +22,16 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+package io.github.utk003.json.elements;
 
-import me.utk.json_parser.scanner.Scanner;
-
-import java.io.PrintStream;
 import java.util.Collection;
-import java.util.Collections;
 
-public class JSONPrimitive extends JSONValue {
-    @Override
-    public final ValueType type() {
-        return ValueType.PRIMITIVE;
-    }
+public interface JSONStorageElement<E> {
+    int numElements();
+    boolean isEmpty();
 
-    private final Boolean value;
+    void modifyElement(E key, JSONValue obj);
+    JSONValue getElement(E key);
 
-    public JSONPrimitive(boolean val) {
-        value = val;
-    }
-    public JSONPrimitive(String s) {
-        if ("true".equals(s))
-            value = true;
-        else if ("false".equals(s))
-            value = false;
-        else
-            value = null;
-    }
-
-    public Boolean getValue() {
-        return value;
-    }
-
-    public static JSONPrimitive parsePrimitive(Scanner s) {
-        return new JSONPrimitive(s.current());
-    }
-
-    @Override
-    public Collection<JSONValue> findElements(String[] tokenizedPath, int index) {
-        if (index == tokenizedPath.length)
-            return Collections.singleton(this);
-        else
-            return Collections.emptySet();
-    }
-
-    @Override
-    protected void print(PrintStream out, int depth) {
-        outputString(out, "" + value);
-    }
+    Collection<JSONValue> getElements();
 }

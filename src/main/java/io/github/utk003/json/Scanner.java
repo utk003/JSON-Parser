@@ -22,7 +22,7 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.scanner;
+package io.github.utk003.json;
 
 import java.io.BufferedReader;
 import java.io.IOException;

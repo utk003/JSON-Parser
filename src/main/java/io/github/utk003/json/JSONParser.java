@@ -22,10 +22,9 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json;
+package io.github.utk003.json;
 
-import me.utk.json_parser.json.elements.*;
-import me.utk.json_parser.scanner.Scanner;
+import io.github.utk003.json.elements.*;
 
 import java.io.InputStream;
 import java.util.Stack;
@@ -64,7 +63,7 @@ public class JSONParser {
         stack.push(getElement(s.current()));
         strStack.push(null);
 
-        JSONValue.ValueType type = stack.peek().type();
+        JSONValue.ValueType type = stack.peek().TYPE;
         boolean justAddedStorageElement = type == JSONValue.ValueType.OBJECT || type == JSONValue.ValueType.ARRAY;
         while (s.hasMore()) {
             String str = s.advance(), key;
@@ -75,12 +74,13 @@ public class JSONParser {
                     justAddedStorageElement = false;
                 else {
                     JSONValue element = stack.pop();
-                    ((JSONStorageElement) stack.peek()).addElement(strStack.pop(), element);
+                    //noinspection unchecked
+                    ((JSONStorageElement<Object>) stack.peek()).modifyElement(strStack.pop(), element);
                 }
                 continue;
             }
 
-            if (stack.peek().type() == JSONValue.ValueType.OBJECT) {
+            if (stack.peek().TYPE == JSONValue.ValueType.OBJECT) {
                 key = str.substring(1, str.length() - 1); // str contains key for JSONValue
                 s.advance(); // skip colon
                 str = s.advance(); // s.advance() gets first token of nested element
@@ -91,7 +91,7 @@ public class JSONParser {
 
             strStack.push(key);
             stack.push(getElement(str));
-            type = stack.peek().type();
+            type = stack.peek().TYPE;
             justAddedStorageElement = type == JSONValue.ValueType.OBJECT || type == JSONValue.ValueType.ARRAY;
         }
         return stack.peek();

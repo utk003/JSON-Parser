@@ -22,90 +22,90 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+package io.github.utk003.json.elements;
 
-import me.utk.json_parser.json.JSONParser;
-import me.utk.json_parser.scanner.Scanner;
+import io.github.utk003.json.JSONParser;
+import io.github.utk003.json.Scanner;
+import io.github.utk003.util.misc.Verify;
 
 import java.io.PrintStream;
 import java.util.*;
 
-public class JSONObject extends JSONValue implements JSONStorageElement {
+public class JSONArray extends JSONValue implements JSONStorageElement<Integer> {
+    private final List<JSONValue> ELEMENTS = new ArrayList<>();
+
+    private JSONArray() {
+        super(ValueType.ARRAY);
+    }
+    public JSONArray(JSONValue... elements) {
+        this();
+        ELEMENTS.addAll(Arrays.asList(elements));
+    }
+    public JSONArray(List<JSONValue> elements) {
+        this();
+        ELEMENTS.addAll(elements);
+    }
+
     @Override
-    public final ValueType type() {
-        return ValueType.OBJECT;
+    public final int numElements() {
+        return ELEMENTS.size();
+    }
+    @Override
+    public final boolean isEmpty() {
+        return ELEMENTS.isEmpty();
     }
 
-    private final Map<String, JSONValue> map;
-
-    public JSONObject() {
-        map = new HashMap<>(20);
+    @Override
+    public void modifyElement(Integer index, JSONValue obj) {
+        if (index == numElements()) ELEMENTS.add(obj);
+        else ELEMENTS.set(index, obj);
+    }
+    @Override
+    public JSONValue getElement(Integer index) {
+        return ELEMENTS.get(index);
+    }
+    @Override
+    public Collection<JSONValue> getElements() {
+        return Collections.unmodifiableList(ELEMENTS);
     }
 
-    public void addElement(String key, JSONValue val) {
-        map.put(key, val);
-    }
-    public boolean isEmpty() {
-        return map.isEmpty();
-    }
-    public int numElements() {
-        return map.size();
-    }
-    public Iterator<JSONValue> iterator() {
-        Set<JSONValue> valueSet = new HashSet<>(map.size());
-        for (String str: map.keySet())
-            valueSet.add(map.get(str));
-        return valueSet.iterator();
-    }
-
-    public JSONValue getValue(String key) {
-        return map.get(key);
-    }
-
-    public static JSONObject parseObject(Scanner s) {
-        JSONObject obj = new JSONObject();
-
-        String token;
+    public static JSONArray parseArray(Scanner s) {
+        JSONArray obj = new JSONArray();
         do {
-            token = s.advance();
-            if (token.equals("}"))
+            if (s.advance().equals("]"))
                 break;
 
-            s.advance(); // skip colon (:)
-
-            s.advance(); // load first token of value
-            obj.map.put(token.substring(1, token.length() - 1), JSONParser.parseRecursive(s));
+            obj.ELEMENTS.add(JSONParser.parseRecursive(s));
         } while (s.advance().equals(","));
         return obj;
     }
 
     @Override
-    public Collection<JSONValue> findElements(String[] tokenizedPath, int index) {
-        Collection<JSONValue> collection = getElements(iterator(), tokenizedPath, index);
-        if (collection == null) {
-            JSONValue element = map.get(tokenizedPath[index]);
-            if (element != null)
-                collection = element.findElements(tokenizedPath, index + 1);
-            else
-                collection = Collections.emptySet();
-        }
-        return collection;
+    public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        PathTrace trace = tokenizedPath[index];
+        Verify.requireNull(trace.KEY);
+
+        index++;
+
+        Collection<JSONValue> elements;
+        if (trace.INDEX < 0) {
+            elements = new LinkedList<>();
+            for (JSONValue element : ELEMENTS)
+                elements.addAll(element.findElements(tokenizedPath, index));
+        } else
+            elements = getElement(trace.INDEX).findElements(tokenizedPath, index);
+        return elements;
     }
 
     @Override
     protected void print(PrintStream out, int depth) {
         depth++;
-        outputStringWithNewLine(out, "{");
+        outputStringWithNewLine(out, "[");
 
-        int count = 0, total = map.size();
-        for (String key: map.keySet()) {
+        int count = 0, total = ELEMENTS.size();
+        for (JSONValue jsonValue : ELEMENTS) {
             outputString(out, "", depth);
-            outputString(out, "\"");
-            outputString(out, key);
-            outputString(out, "\"");
-            outputString(out, ": ");
-
-            map.get(key).print(out, depth);
+            jsonValue.print(out, depth);
 
             if (++count != total)
                 outputStringWithNewLine(out, ",");
@@ -114,6 +114,6 @@ public class JSONObject extends JSONValue implements JSONStorageElement {
         }
 
         depth--;
-        outputString(out, "}", depth);
+        outputString(out, "]", depth);
     }
 }

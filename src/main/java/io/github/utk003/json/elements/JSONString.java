@@ -22,9 +22,9 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+package io.github.utk003.json.elements;
 
-import me.utk.json_parser.scanner.Scanner;
+import io.github.utk003.json.Scanner;
 
 import java.io.PrintStream;
 import java.util.Collection;
@@ -32,14 +32,10 @@ import java.util.Collections;
 import java.util.Iterator;
 
 public class JSONString extends JSONValue {
-    @Override
-    public final ValueType type() {
-        return ValueType.STRING;
-    }
-
     private final String string;
 
     public JSONString(String str) {
+        super(ValueType.STRING);
         string = preprocess(str);
     }
 
@@ -104,7 +100,7 @@ public class JSONString extends JSONValue {
             return c - 'A' + 10;
         if ('a' <= c && c <= 'z')
             return c - 'a' + 10;
-        return -1;
+        throw new IllegalArgumentException("'" + c + "' is not a valid hex character");
     }
 
     public String getValue() {
@@ -117,11 +113,8 @@ public class JSONString extends JSONValue {
     }
 
     @Override
-    public Collection<JSONValue> findElements(String[] tokenizedPath, int index) {
-        if (index == tokenizedPath.length)
-            return Collections.singleton(this);
-        else
-            return Collections.emptySet();
+    public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        return index == tokenizedPath.length ? Collections.singleton(this) : Collections.emptySet();
     }
 
     @Override

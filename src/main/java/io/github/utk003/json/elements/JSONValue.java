@@ -22,50 +22,66 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+package io.github.utk003.json.elements;
+
+import com.sun.istack.internal.NotNull;
+import io.github.utk003.util.misc.Verify;
 
 import java.io.PrintStream;
 import java.util.*;
 
 public abstract class JSONValue {
-    protected JSONValue() {
-    }
-
-    public abstract ValueType type();
     public enum ValueType {
         OBJECT, ARRAY, NUMBER, STRING, PRIMITIVE
     }
 
-    protected static void verify(boolean expr) {
-        if (!expr)
-            throw new RuntimeException("Unexpected Failure");
+    public final ValueType TYPE;
+    protected JSONValue(ValueType type) {
+        TYPE = type;
     }
-    protected static void verify(boolean expr, String position) {
-        if (!expr)
-            throw new RuntimeException("Failure at " + position);
+
+    public static final class PathTrace {
+        public final int INDEX;
+        public final String KEY;
+
+        private PathTrace(String key, boolean isKey) {
+            Verify.requireNotNull(key);
+
+            if (isKey) {
+                INDEX = -1;
+                KEY = key;
+            } else {
+                INDEX = key.equals("*") ? -1 : Integer.parseInt(key);
+                KEY = null;
+            }
+        }
     }
 
     public final Collection<JSONValue> findElements(String path) {
-        char[] charPath = path.toCharArray();
-        ArrayList<String> pathList = new ArrayList<>();
+        String[] splitPath = path.split("[.\\[]");
+        ArrayList<PathTrace> pathList = new ArrayList<>();
 
-        StringBuilder builder = new StringBuilder();
-        for (char ch : charPath) {
-            if ('.' == ch || '[' == ch || ']' == ch) {
-                if (builder.length() != 0)
-                    pathList.add(builder.toString());
-                builder = new StringBuilder();
-            } else
-                builder.append(ch);
+        for (String element : splitPath) {
+            int lenMin1 = element.length() - 1;
+            if (element.charAt(lenMin1) == ']')
+                pathList.add(new PathTrace(element.substring(0, lenMin1), false));
+            else
+                pathList.add(new PathTrace(element, true));
         }
-        if (builder.length() != 0)
-            pathList.add(builder.toString());
 
-        return findElements(pathList.toArray(new String[0]), 0);
+        return findElements(pathList.toArray(new PathTrace[0]), 0);
     }
-    protected abstract Collection<JSONValue> findElements(String[] tokenizedPath, int index);
+    protected abstract Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index);
 
     protected static final String PRINT_INDENT = "  ";
+
+    public final void print(PrintStream out) {
+        print(out, 0);
+    }
+    public final void println(PrintStream out) {
+        print(out);
+        out.println();
+    }
 
     protected final void outputString(PrintStream out, String toWrite) {
         outputString(out, toWrite, 0);
@@ -80,51 +96,9 @@ public abstract class JSONValue {
         outputStringWithNewLine(out, "");
     }
     protected final void outputStringWithNewLine(PrintStream out, String toWrite) {
-        outputStringWithNewLine(out, toWrite, 0);
-    }
-    protected final void outputStringWithNewLine(PrintStream out, String toWrite, int depth) {
-        outputString(out, toWrite, depth);
+        outputString(out, toWrite);
         out.println();
     }
 
-    public final void print(PrintStream out) {
-        print(out, 0);
-    }
     protected abstract void print(PrintStream out, int depth);
-
-    public final void println(PrintStream out) {
-        print(out, 0);
-        out.println();
-    }
-
-    protected final Collection<JSONValue> getElements(Iterator<JSONValue> it, String[] tokenizedPath, int index) {
-        verify(0 <= index && index <= tokenizedPath.length);
-
-        if (tokenizedPath.length == index) {
-            if ("?".equals(tokenizedPath[index - 1]))
-                return Collections.emptySet();
-            else
-                return Collections.singleton(this);
-        }
-
-        String token = tokenizedPath[index++];
-        if (token.equals("*")) {
-            Collection<JSONValue> elements = new HashSet<>();
-            while (it.hasNext())
-                elements.addAll(it.next().findElements(tokenizedPath, index));
-            return elements;
-        }
-
-        if (token.contains("?")) {
-            Collection<JSONValue> elements = new HashSet<>();
-            while (it.hasNext()) {
-                JSONValue jsonValue = it.next();
-                elements.addAll(jsonValue.findElements(tokenizedPath, index - 1));
-                elements.addAll(jsonValue.findElements(tokenizedPath, index));
-            }
-            return elements;
-        }
-
-        return null;
-    }
 }

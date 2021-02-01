@@ -22,46 +22,36 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+package io.github.utk003.json.elements;
 
-import me.utk.json_parser.scanner.Scanner;
+import io.github.utk003.json.Scanner;
 
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 
-public class JSONNumber extends JSONValue {
-    @Override
-    public final ValueType type() {
-        return ValueType.NUMBER;
-    }
+public class JSONPrimitive extends JSONValue {
+    private final Boolean value;
 
-    private final Number value;
-
-    public JSONNumber(String s) {
-        if (s.contains("e") || s.contains("E") || s.contains("."))
-            value = Double.parseDouble(s);
-        else
-            value = Long.parseLong(s);
-    }
-    public JSONNumber(Number val) {
+    public JSONPrimitive(Boolean val) {
+        super(ValueType.PRIMITIVE);
         value = val;
     }
+    public JSONPrimitive(String s) {
+        this("true".equals(s) ? (Boolean) true : "false".equals(s) ? false : null);
+    }
 
-    public Number getValue() {
+    public Boolean getValue() {
         return value;
     }
 
-    public static JSONNumber parseNumber(Scanner s) {
-        return new JSONNumber(s.current());
+    public static JSONPrimitive parsePrimitive(Scanner s) {
+        return new JSONPrimitive(s.current());
     }
 
     @Override
-    public Collection<JSONValue> findElements(String[] tokenizedPath, int index) {
-        if (index == tokenizedPath.length)
-            return Collections.singleton(this);
-        else
-            return Collections.emptySet();
+    public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
+        return index == tokenizedPath.length ? Collections.singleton(this) : Collections.emptySet();
     }
 
     @Override

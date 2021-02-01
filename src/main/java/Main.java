@@ -22,15 +22,53 @@
 // SOFTWARE.                                                                      //
 ////////////////////////////////////////////////////////////////////////////////////
 
-package me.utk.json_parser.json.elements;
+import io.github.utk003.json.JSONParser;
+import io.github.utk003.json.elements.*;
+import io.github.utk003.json.Scanner;
 
-import java.util.Iterator;
+import java.io.*;
 
-public interface JSONStorageElement {
-    int numElements();
-    boolean isEmpty();
+public class Main {
+    private static long time;
+    private static void markStartTime() {
+        time = System.nanoTime();
+    }
+    private static long readAndPrintTime(String message) {
+        long delta = System.nanoTime() - time;
+        if (message != null) {
+            System.out.println(message + ": " + delta / 1_000_000.0 + " ms");
+            System.out.println(message + ": " + delta / 1_000_000_000.0 + " s");
+        }
+        return delta;
+    }
 
-    void addElement(String key, JSONValue obj);
+    public static void main(String[] args) throws IOException {
+        String fileName = "test.json";
+        JSONValue json = JSONParser.parse(new FileInputStream(fileName));
+    }
 
-    Iterator<JSONValue> iterator();
+    private static void scanningBenchmark(String file) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        String s;
+        char[] arr;
+        markStartTime();
+        while ((s = br.readLine()) != null) {
+            arr = s.toCharArray();
+            for (char c : arr) ;
+        }
+        readAndPrintTime("Raw BufferedReader Input");
+
+        System.out.println();
+
+        Scanner sc = new Scanner(new FileInputStream(file));
+        markStartTime();
+        while (sc.hasMore())
+            sc.advance();
+        long t = readAndPrintTime("Scanner-Tokenized Input");
+
+        System.out.println();
+
+        System.out.println("Number of tokens: " + sc.tokensPassed());
+        System.out.println("Time per token: " + t / 1000.0 / sc.tokensPassed() + " μs (microseconds)");
+    }
 }
