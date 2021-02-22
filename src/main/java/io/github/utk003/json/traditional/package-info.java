@@ -1,6 +1,7 @@
+/*
 MIT License
 
-Copyright (c) 2020-2021 Utkarsh Priyam
+Copyright (c) 2021 Utkarsh Priyam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +20,22 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+ */
+
+/**
+ * The "traditional" JSON parsing package provides utilities for converting JSON
+ * into a tree with {@link io.github.utk003.json.traditional.elements.JSONValue} nodes.
+ * <p>
+ * The specific node types can all be found in {@link io.github.utk003.json.traditional.elements},
+ * and the associated parser class is {@link io.github.utk003.json.traditional.JSONParser}.
+ * <p>
+ * For more advanced "Object-Oriented" JSON parsing, check out the
+ * {@link io.github.utk003.json.ooj} package. To translate from traditional
+ * parsing results to OOJ, use {@link io.github.utk003.json.ooj.OOJTranslator}.
+ *
+ * @see io.github.utk003.json.traditional.JSONParser
+ * @see io.github.utk003.json.traditional.elements
+ * @see io.github.utk003.json.ooj
+ * @see io.github.utk003.json.ooj.OOJTranslator
+ */
+package io.github.utk003.json.traditional;

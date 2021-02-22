@@ -1,6 +1,7 @@
+/*
 MIT License
 
-Copyright (c) 2020-2021 Utkarsh Priyam
+Copyright (c) 2020 Utkarsh Priyam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +20,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+ */
+
+package io.github.utk003.json.traditional.elements;
+
+import io.github.utk003.util.data.immutable.ImmutablePair;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
+public interface JSONStorageElement<E> {
+    int numElements();
+    boolean isEmpty();
+
+    void modifyElement(E key, JSONValue obj);
+    JSONValue getElement(E key);
+
+    Collection<JSONValue> getElements();
+
+    ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired();
+}

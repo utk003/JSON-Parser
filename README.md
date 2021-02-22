@@ -1,4 +1,4 @@
-# JSON Parser
+# JSON Library
 A collection of Java classes for parsing (and searching through) [JSON](https://www.json.org/json-en.html).
 
 This library should be prefered for projects which require simple, unencumbered JSON parsing or an easily searchable output JSON structure. However, other use cases may also see improvements over other libraries depending on the specifics of the application.

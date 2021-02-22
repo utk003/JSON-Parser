@@ -7,7 +7,8 @@
     <groupId>io.github.utk003</groupId>
     <artifactId>json-library</artifactId>
     <name>JSON Library</name>
-    <version>Alpha</version>
+    <version>1.1.0</version>
+    <url>https://utk003.github.io/JSON-Parser/javadoc/1.1.0</url>
     <packaging>jar</packaging>
 
     <properties>
@@ -62,7 +63,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -71,23 +71,20 @@
                     <!-- more info on plugin config @ https://stackoverflow.com/questions/30507476/maven-javadoc-how-to-include-centralized-resources/ -->
                     <bottom>
                         <![CDATA[
-                        To return to the main website, click here: <a href="/index.html" target="_top">utk003.github.io</a>.
-                        <br/>To go to this project's website page, click here: <a href="#" target="_top">(work in progress)</a>.
-                        <br/>To access to this project's github repository, click here: <a href="https://github.com/utk003/JSON-Parser" target="_top">github.com/utk003/JSON-Parser</a>.
-                        <br/>Copyright &copy; <span class="year-span"></span> Utkarsh Priyam. All rights reserved.
-                        <script type="text/javascript">
-                            const startYear = 2021;
-                            const yearSpots = document.getElementsByClassName("year-span");
-                            const year = new Date().getFullYear();
-                            for (let i = yearSpots.length - 1; i >= 0; i--)
-                            if (startYear === year)
-                                yearSpots.item(i).innerHTML = year;
-                            else
-                                yearSpots.item(i).innerHTML = startYear + "-" + year;
-                        </script>
+                        <div class="contentContainer big-links">
+                        <h3>Quick Links:</h3>
+                        <a href="/" target="_top">Website Homepage</a><br/>
+                        <a href="/Utilities" target="_top">Project Homepage</a><br/>
+                        <a href="https://github.com/utk003/Utilities" target="_top">Project Github</a><br/>
+                        <br/>
+                        Copyright &copy; <span class="year-span">2020</span> Utkarsh Priyam. All rights reserved.
+                        </div>
+                        <script src="/scripts/copyright.js"></script>
+                        <link href="/css/misc.css" rel="stylesheet">
                         ]]>
                     </bottom>
                     <additionalparam>--allow-script-in-comments</additionalparam>
+                    <detectLinks>true</detectLinks>
                 </configuration>
                 <executions>
                     <execution>
@@ -110,7 +107,7 @@
         <dependency>
             <groupId>io.github.utk003</groupId>
             <artifactId>utilities-library</artifactId>
-            <version>1.0.5</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
 </project>
