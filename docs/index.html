@@ -45,7 +45,34 @@
          alt="JSON Logo &amp; Sample JSON Code"
          title="JSON Library graphic created by Utkarsh Priyam (me) (https://github.com/utk003)">
     <h1 class="text-center">JSON Library</h1>
-    <p><i>TODO Description, etc. here</i></p>
+    <p>A collection of Java classes for parsing (and searching through) <a href="https://www.json.org/json-en.html">JSON</a>.</p>
+    <p>This library should be preferred for projects which require simple, unencumbered JSON parsing, an easily searchable output JSON structure, or strictly defined object-oriented JSON. However, other use cases may also see improvements over other libraries depending on the specifics of the application.</p>
+
+    <h2>Advantages over Other Libraries</h2>
+    <p>This library provides many advantages for use over other libraries such as <a href="https://github.com/google/gson">GSON</a> and <a href="https://github.com/FasterXML/jackson">Jackson</a>.</p>
+    <p>1. Options for both simple class-free JSON parsing and POJO-based JSON</p>
+    <p>    * Convenient conversion from class-free JSON to POJO-based JSON</p>
+    <p>2. A powerful, semi-regex-style search syntax for easy access to different JSON elements</p>
+    <p>3. Speed in scanning and parsing JSON</p>
+
+    <h3>Class-free JSON vs POJO-based JSON</h3>
+    <p>Many other JSON libraries require creating POJO classes which mirror the objects found in the parsed JSON. However, this library provides the option to instead parse JSON into a tree of JSONValues.</p>
+    <p>The class-free JSON parsing, which can be found in the <span style="color:#2c4557">io.github.utk003.json.traditional</span> package, creates a tree of JSONValues which can then be iterated through using various accessor methods or searched using an advanced-regex-like search syntax (see below).</p>
+    <p>The POJO-based JSON parsing, for which I coined the phrase "Object-Oriented JSON" (OOJ) for convenience, can be found in the <span style="color:#2c4557">io.github.utk003.json.ooj</span>. This package provides functionality for parsing JSON into POJOs or for converting the tree-based traditional JSON parsing output (of JSONValues) into POJOs.</p>
+
+    <h3>Powerful Search Functionality</h3>
+    <p>This library provides a special search syntax can search through JSONValue trees for all JSON elements that matches a specific element path.</p>
+    <p>The search syntax closely mirrors Java's package/array syntax, with periods (<span style="color:#4E4E4E">.</span>) identifying object's elements and brackets (<span style="color:#4E4E4E">[</span>, <span style="color:#4E4E4E">]</span>) designating a particular index in an array. For example, <span style="color:#4E4E4E">"object.variable"</span> finds the JSON object element named <span style="color:#4E4E4E">"object"</span> and accesses its internal element named <span style="color:#4E4E4E">"variable"</span>, and <span style="color:#4E4E4E">"array[index]"</span> finds the JSON array element named <span style="color:#4E4E4E">"array"</span> and accesses the element at index <span style="color:#4E4E4E">"index"</span>.</p>
+    <p>In addition to basic text matching, there are also 1 special character: asterisks (<span style="color:#4E4E4E">*</span>). Asterisks are wildcard characters which designate a miscellaneous term in the search. For example, <span style="color:#4E4E4E">a.*.b</span> can match <span style="color:#4E4E4E">a.x.b</span> and <span style="color:#4E4E4E">a.y.b</span> but not <span style="color:#4E4E4E">a.b</span> or <span style="color:#4E4E4E">a.x.y.b</span>.</p>
+    <p>Lastly, the search expression provides anchored and non-anchored search modes. In anchored mode, the search path will be forced to start at the root of the JSON tree. However, in the non-anchored mode, JSON tree nodes that match the search path when it starts at the root of a subtree will be included as well. By default, the search is not anchored, but anchored mode can be enabled by prepending <span style="color:#4E4E4E">"&lt;root&gt;."</span> to the start of the search path.</p>
+
+    <h3>Speed</h3>
+    <p>Although not the fastest library around, this library does provide significant speed, with a scanner that can tokenize the input file at roughly the same speed as a BufferedReader can provide new lines (in *most* JSON files). The JSON parser is quite fast as well, though not to the same extent as the scanner.</p>
+
+    <h2>How to Use This Library</h2>
+    <p>Simply grab the jars from <a href="releases.html">the releases page</a>.</p>
+    <p>For a tree-based, class-free JSON parsing approach, use <span style="color:#2c4557">io.github.utk003.json.traditional.JSONParser</span>.</p>
+    <p>For an OOJ approach instead, use <span style="color:#2c4557">io.github.utk003.json.ooj.OOJParser</span> instead.</p>
 </div> <!-- /.container -->
 
 <!-- Footer -->
