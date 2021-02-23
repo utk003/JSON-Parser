@@ -30,7 +30,7 @@ This library provides a special search syntax can search through JSONValue trees
 
 The search syntax closely mirrors Java's package/array syntax, with periods (`.`) identifying object's elements and brackets (`[`, `]`) designating a particular index in an array. For example, `object.variable` finds the JSON object element named `object` and accesses its internal element named `variable`, and `array[index]` finds the JSON array element named `array` and accesses the element at index `index`.
 
-In addition to basic text matching, there are also 1 special character: asterisks (`*`). Asterisks are wildcard characters which designate a miscellaneous term in the search. For example, `a.*.b` can match `a.x.b` and `a.y.b` but not `a.b` or `a.x.y.b`.
+In addition to basic text matching, there is also 1 special character: asterisks (`*`). Asterisks are wildcard characters which designate a miscellaneous term in the search. For example, `a.*.b` can match `a.x.b` and `a.y.b` but not `a.b` or `a.x.y.b`.
 
 Lastly, the search expression provides anchored and non-anchored search modes. In anchored mode, the search path will be forced to start at the root of the JSON tree. However, in the non-anchored mode, JSON tree nodes that match the search path when it starts at the root of a subtree will be included as well. By default, the search is not anchored, but anchored mode can be enabled by prepending `<root>.` to the start of the search path.
 
