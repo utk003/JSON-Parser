@@ -22,69 +22,72 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package io.github.utk003.json.traditional.elements;
+package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
 import io.github.utk003.util.data.immutable.ImmutablePair;
+import io.github.utk003.util.misc.Verify;
 
 import java.io.PrintStream;
 import java.util.*;
 
-public class JSONArray extends JSONValue implements JSONStorageElement<Integer> {
-    private final List<JSONValue> ELEMENTS = new ArrayList<>();
+public class JSONObject extends JSONValue implements JSONStorageElement<String> {
+    private final Map<String, JSONValue> ELEMENTS;
 
-    public JSONArray(String path) {
-        super(ValueType.ARRAY, path);
-    }
-    public JSONArray(JSONValue[] elements, String path) {
-        this(path);
-        ELEMENTS.addAll(Arrays.asList(elements));
-    }
-    public JSONArray(List<JSONValue> elements, String path) {
-        this(path);
-        ELEMENTS.addAll(elements);
+    public JSONObject(String path) {
+        super(ValueType.OBJECT, path);
+        ELEMENTS = new HashMap<>();
     }
 
     @Override
-    public final int numElements() {
+    public int numElements() {
         return ELEMENTS.size();
     }
+
     @Override
-    public final boolean isEmpty() {
+    public boolean isEmpty() {
         return ELEMENTS.isEmpty();
     }
 
     @Override
-    public void modifyElement(Integer index, JSONValue obj) {
-        if (index == null || index == numElements()) ELEMENTS.add(obj);
-        else ELEMENTS.set(index, obj);
+    public void modifyElement(String key, JSONValue val) {
+        ELEMENTS.put(key, val);
     }
     @Override
-    public JSONValue getElement(Integer index) {
-        return ELEMENTS.get(index);
+    public JSONValue getElement(String key) {
+        return ELEMENTS.get(key);
     }
     @Override
     public Collection<JSONValue> getElements() {
-        return Collections.unmodifiableList(ELEMENTS);
+        return Collections.unmodifiableCollection(ELEMENTS.values());
     }
     @Override
     public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired() {
         ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
-        for (JSONValue e : ELEMENTS) {
-            pair.FIRST.addLast(null);
-            pair.SECOND.addLast(e);
+        for (Map.Entry<String, JSONValue> e : ELEMENTS.entrySet()) {
+            pair.FIRST.addLast(e.getKey());
+            pair.SECOND.addLast(e.getValue());
         }
         return pair;
     }
 
-    static JSONArray parseArray(Scanner s, String path) {
-        JSONArray obj = new JSONArray(path);
-        int i = 0;
+    static JSONObject parseObject(Scanner s, String path) {
+        JSONObject obj = new JSONObject(path);
+
+        String token;
         do {
-            if (s.advance().equals("]"))
+            token = s.advance();
+            if (token.equals("}"))
                 break;
 
-            obj.ELEMENTS.add(JSONValue.parseJSON(s, path + "[" + i++ + "]"));
+            // skip colon (:)
+            Verify.requireTrue(s.advance().equals(":"));
+
+            s.advance(); // load first token of value
+            obj.ELEMENTS.put(
+                    token = token.substring(1, token.length() - 1), // remove quotes from key
+                    JSONValue.parseJSON(s, path + "." + token)
+            );
         } while (s.advance().equals(","));
         return obj;
     }
@@ -95,30 +98,35 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
             return Collections.singleton(this);
 
         PathTrace trace = tokenizedPath[index];
-        if (trace.KEY != null)
+        if (trace.KEY == null)
             return Collections.emptySet();
 
         index++;
 
         Collection<JSONValue> elements;
-        if (trace.INDEX < 0) {
+        if (trace.KEY.equals("*")) {
             elements = new LinkedList<>();
-            for (JSONValue element : ELEMENTS)
+            for (JSONValue element : ELEMENTS.values())
                 elements.addAll(element.findElements(tokenizedPath, index));
         } else
-            elements = getElement(trace.INDEX).findElements(tokenizedPath, index);
+            elements = getElement(trace.KEY).findElements(tokenizedPath, index);
         return elements;
     }
 
     @Override
     protected void print(PrintStream out, int depth) {
         depth++;
-        outputStringWithNewLine(out, "[");
+        outputStringWithNewLine(out, "{");
 
         int count = 0, total = ELEMENTS.size();
-        for (JSONValue jsonValue : ELEMENTS) {
+        for (Map.Entry<String, JSONValue> entry: ELEMENTS.entrySet()) {
             outputString(out, "", depth);
-            jsonValue.print(out, depth);
+            outputString(out, "\"");
+            outputString(out, entry.getKey());
+            outputString(out, "\"");
+            outputString(out, ": ");
+
+            entry.getValue().print(out, depth);
 
             if (++count != total)
                 outputStringWithNewLine(out, ",");
@@ -127,9 +135,8 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
         }
 
         depth--;
-        outputString(out, "]", depth);
+        outputString(out, "}", depth);
     }
-
 
     @Override
     public int hashCode() {
@@ -138,14 +145,14 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof JSONArray && ELEMENTS.equals(((JSONArray) obj).ELEMENTS);
+        return obj instanceof JSONObject && ELEMENTS.equals(((JSONObject) obj).ELEMENTS);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (JSONValue element : ELEMENTS)
-            builder.append(",").append(element);
-        return "[" + (builder.length() == 0 ? "" : builder.substring(1)) + "]";
+        for (Map.Entry<String, JSONValue> element : ELEMENTS.entrySet())
+            builder.append(",\"").append(element.getKey()).append("\":").append(element.getValue());
+        return "{" + (builder.length() == 0 ? "" : builder.substring(1)) + "}";
     }
 }

@@ -25,8 +25,8 @@ SOFTWARE.
 package io.github.utk003.json.ooj;
 
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.json.traditional.elements.JSONStorageElement;
-import io.github.utk003.json.traditional.elements.JSONValue;
+import io.github.utk003.json.traditional.node.JSONStorageElement;
+import io.github.utk003.json.traditional.node.JSONValue;
 import io.github.utk003.util.data.immutable.ImmutablePair;
 import io.github.utk003.util.misc.Verify;
 

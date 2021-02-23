@@ -23,10 +23,10 @@ SOFTWARE.
  */
 
 /**
- * The "traditional" JSON parsing package provides utilities for converting JSON
- * into a tree with {@link io.github.utk003.json.traditional.elements.JSONValue} nodes.
+ * The traditional JSON parsing package provides utilities for converting JSON
+ * into a tree with {@link io.github.utk003.json.traditional.node.JSONValue} nodes.
  * <p>
- * The specific node types can all be found in {@link io.github.utk003.json.traditional.elements},
+ * The specific node types can all be found in {@link io.github.utk003.json.traditional.node},
  * and the associated parser class is {@link io.github.utk003.json.traditional.JSONParser}.
  * <p>
  * For more advanced "Object-Oriented" JSON parsing, check out the
@@ -34,7 +34,7 @@ SOFTWARE.
  * parsing results to OOJ, use {@link io.github.utk003.json.ooj.OOJTranslator}.
  *
  * @see io.github.utk003.json.traditional.JSONParser
- * @see io.github.utk003.json.traditional.elements
+ * @see io.github.utk003.json.traditional.node
  * @see io.github.utk003.json.ooj
  * @see io.github.utk003.json.ooj.OOJTranslator
  */

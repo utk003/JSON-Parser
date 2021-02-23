@@ -22,31 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package io.github.utk003.json.traditional.elements;
+package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
 
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
-public class JSONNumber extends JSONValue {
-    public final Number NUMBER;
+public class JSONPrimitive extends JSONValue {
+    public final Boolean VALUE;
 
-    public JSONNumber(String s, String path) {
-        this(s.contains("e") || s.contains("E") || s.contains(".") ? (Number) Double.parseDouble(s) : (Number) Long.parseLong(s), path);
+    public JSONPrimitive(Boolean val, String path) {
+        super(ValueType.PRIMITIVE, path);
+        VALUE = val;
     }
-    public JSONNumber(Number val, String path) {
-        super(ValueType.NUMBER, path);
-        NUMBER = val;
-    }
-
-    public Number getNumber() {
-        return NUMBER;
+    public JSONPrimitive(String s, String path) {
+        this("true".equals(s) ? (Boolean) true : "false".equals(s) ? false : null, path);
     }
 
-    static JSONNumber parseNumber(Scanner s, String path) {
-        return new JSONNumber(s.current(), path);
+    public Boolean getValue() {
+        return VALUE;
+    }
+
+    static JSONPrimitive parsePrimitive(Scanner s, String path) {
+        return new JSONPrimitive(s.current(), path);
     }
 
     @Override
@@ -56,21 +57,21 @@ public class JSONNumber extends JSONValue {
 
     @Override
     protected void print(PrintStream out, int depth) {
-        outputString(out, "" + NUMBER);
+        outputString(out, "" + VALUE);
     }
 
     @Override
     public int hashCode() {
-        return NUMBER.hashCode();
+        return VALUE == null ? 0 : VALUE.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof JSONNumber && NUMBER.equals(((JSONNumber) obj).NUMBER);
+        return obj instanceof JSONPrimitive && Objects.equals(VALUE, ((JSONPrimitive) obj).VALUE);
     }
 
     @Override
     public String toString() {
-        return "" + NUMBER;
+        return "" + VALUE;
     }
 }

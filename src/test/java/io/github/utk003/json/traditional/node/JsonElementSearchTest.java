@@ -1,4 +1,4 @@
-package io.github.utk003.json.traditional.elements;/*
+package io.github.utk003.json.traditional.node;/*
 MIT License
 
 Copyright (c) 2020-2021 Utkarsh Priyam
@@ -23,7 +23,6 @@ SOFTWARE.
  */
 
 import io.github.utk003.json.traditional.JSONParser;
-import io.github.utk003.json.traditional.elements.JSONValue;
 
 import java.io.FileInputStream;
 import java.io.IOException;

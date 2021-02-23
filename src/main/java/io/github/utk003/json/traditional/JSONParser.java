@@ -26,14 +26,21 @@ package io.github.utk003.json.traditional;
 
 import io.github.utk003.json.scanner.JSONScanner;
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.json.traditional.elements.*;
+import io.github.utk003.json.traditional.node.*;
 import io.github.utk003.util.misc.Verify;
 
 import java.io.InputStream;
 import java.util.Stack;
 
-import static io.github.utk003.json.traditional.elements.JSONValue.ROOT_PATH;
+import static io.github.utk003.json.traditional.node.JSONValue.ROOT_PATH;
 
+/**
+ * A parser for creating JSON trees with {@link JSONValue} nodes
+ * from some form of {@link Scanner} or {@code Scanner}-accepted
+ * input format.
+ * <p>
+ *
+ */
 public class JSONParser {
     public static JSONValue parseRecursive(InputStream source) {
         return JSONValue.parseJSON(new JSONScanner(source));

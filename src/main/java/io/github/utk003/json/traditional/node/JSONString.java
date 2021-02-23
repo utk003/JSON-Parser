@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package io.github.utk003.json.traditional.elements;
+package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
 

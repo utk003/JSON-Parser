@@ -23,7 +23,7 @@ SOFTWARE.
  */
 
 import io.github.utk003.json.traditional.JSONParser;
-import io.github.utk003.json.traditional.elements.JSONValue;
+import io.github.utk003.json.traditional.node.JSONValue;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
