@@ -31,36 +31,69 @@ import io.github.utk003.util.misc.Verify;
 import java.io.PrintStream;
 import java.util.*;
 
+/**
+ * A {@link JSONValue} that represents a JSON object.
+ * <p>
+ * This class also extends {@link JSONStorageElement} with
+ * a parameter type of {@code String}.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ * @see JSONStorageElement
+ */
 public class JSONObject extends JSONValue implements JSONStorageElement<String> {
     private final Map<String, JSONValue> ELEMENTS;
 
+    /**
+     * Creates a new {@code JSONObject} with the specified path in the JSON tree.
+     *
+     * @param path This node's path in the JSON tree
+     */
     public JSONObject(String path) {
         super(ValueType.OBJECT, path);
         ELEMENTS = new HashMap<>();
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int numElements() {
         return ELEMENTS.size();
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEmpty() {
         return ELEMENTS.isEmpty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void modifyElement(String key, JSONValue val) {
         ELEMENTS.put(key, val);
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JSONValue getElement(String key) {
         return ELEMENTS.get(key);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> getElements() {
         return Collections.unmodifiableCollection(ELEMENTS.values());
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired() {
         ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
@@ -71,6 +104,17 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
         return pair;
     }
 
+    /**
+     * Parses a {@code JSONObject} from the given {@link Scanner}.
+     * <p>
+     * The created {@code JSONObject} will have the specified path.
+     *
+     * @param s    The input source {@code Scanner}
+     * @param path The {@code JSONObject}'s path in the JSON tree
+     * @return The newly created {@code JSONObject}
+     * @see JSONValue#parseJSON(Scanner)
+     * @see JSONValue#parseJSON(Scanner, String)
+     */
     static JSONObject parseObject(Scanner s, String path) {
         JSONObject obj = new JSONObject(path);
 
@@ -92,6 +136,9 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
         return obj;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
         if (index == tokenizedPath.length)
@@ -113,13 +160,16 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
         return elements;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void print(PrintStream out, int depth) {
         depth++;
         outputStringWithNewLine(out, "{");
 
         int count = 0, total = ELEMENTS.size();
-        for (Map.Entry<String, JSONValue> entry: ELEMENTS.entrySet()) {
+        for (Map.Entry<String, JSONValue> entry : ELEMENTS.entrySet()) {
             outputString(out, "", depth);
             outputString(out, "\"");
             outputString(out, entry.getKey());
@@ -131,23 +181,32 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
             if (++count != total)
                 outputStringWithNewLine(out, ",");
             else
-                outputStringWithNewLine(out);
+                outputNewLine(out);
         }
 
         depth--;
         outputString(out, "}", depth);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return ELEMENTS.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof JSONObject && ELEMENTS.equals(((JSONObject) obj).ELEMENTS);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

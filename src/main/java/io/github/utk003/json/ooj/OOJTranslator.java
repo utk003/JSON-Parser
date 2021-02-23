@@ -33,17 +33,68 @@ import io.github.utk003.util.misc.Verify;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * A translator for converting traditional JSON trees
+ * ({@link JSONValue}s) into POJOs using a {@link OOJParser}.
+ * <p>
+ * This translate can translate both recursively and non-recursively.
+ * Both are roughly equivalent in terms of speed.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ * @see OOJParser
+ */
 public class OOJTranslator {
+    /**
+     * Recursively translates the given JSON tree rooted at the
+     * {@code root} argument using the given {@link OOJParser}.
+     *
+     * @param parser The parser that will do the OOJ parsing
+     * @param root   The root of the traditional parsing output
+     * @param clazz  The class of the root of the JSON tree
+     * @param <T>    The class type of the {@code clazz} argument and this method's return type
+     * @return The translated object of type {@code T}
+     * @throws IllegalAccessException    If one arises while using Java reflection to translate the JSON
+     * @throws InstantiationException    If one arises while using Java reflection to translate the JSON
+     * @throws InvocationTargetException If one arises while using Java reflection to translate the JSON
+     * @throws NoSuchFieldException      If one arises while using Java reflection to translate the JSON
+     * @see OOJParser#parseRecursive(Scanner, Class)
+     */
     public static <T> T translateRecursive(OOJParser parser, JSONValue root, Class<T> clazz)
-            throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException, NoSuchMethodException {
+            throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException {
         return parser.parseRecursive(new JSONValueStreamer(root), clazz);
     }
+    /**
+     * Non-recursively translates the given JSON tree rooted at the
+     * {@code root} argument using the given {@link OOJParser}.
+     *
+     * @param parser The parser that will do the OOJ parsing
+     * @param root   The root of the traditional parsing output
+     * @param clazz  The class of the root of the JSON tree
+     * @param <T>    The class type of the {@code clazz} argument and this method's return type
+     * @return The translated object of type {@code T}
+     * @throws IllegalAccessException    If one arises while using Java reflection to translate the JSON
+     * @throws InstantiationException    If one arises while using Java reflection to translate the JSON
+     * @throws InvocationTargetException If one arises while using Java reflection to translate the JSON
+     * @throws NoSuchFieldException      If one arises while using Java reflection to translate the JSON
+     * @see OOJParser#parseNonRecursive(Scanner, Class)
+     */
     public <T> T parseNonRecursive(OOJParser parser, JSONValue root, Class<T> clazz)
-            throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException, NoSuchMethodException {
+            throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException {
         return parser.parseNonRecursive(new JSONValueStreamer(root), clazz);
     }
 
-    static class JSONValueStreamer implements Scanner {
+    /**
+     * A utility {@link Scanner} that streams a JSON tree on-the-fly
+     * for use in re-parsing the JSON or in outputting the original JSON.
+     *
+     * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+     * @version February 23, 2021
+     * @see Scanner
+     * @see JSONValue
+     */
+    public static class JSONValueStreamer implements Scanner {
         private LinkedList<JSONValue> jsonTop;
         private LinkedList<String> keysTop;
 
@@ -56,6 +107,12 @@ public class OOJTranslator {
             return list;
         }
 
+        /**
+         * Creates a new {@code JSONValueStreamer} that will stream
+         * the JSON of the tree rooted at the specified root.
+         *
+         * @param root The root of the JSON tree to stream
+         */
         public JSONValueStreamer(JSONValue root) {
             JSON.push(jsonTop = getSingletonLinkedList(root));
             KEYS.push(keysTop = getSingletonLinkedList(JSONValue.ROOT_PATH));
@@ -74,6 +131,14 @@ public class OOJTranslator {
         private int keyState = 2;
         private final Stack<Integer> KEY_STATES = new Stack<>();
 
+        /**
+         * Retrieves the next token from the JSON tree.
+         * <p>
+         * This method is for internal use, solely in the {@link #advance()} method
+         * (and in the constructor for initialization purposes).
+         *
+         * @return The next token to be streamed
+         */
         private String advance0() {
             if (jsonTop.isEmpty()) {
                 JSON.pop();
@@ -139,18 +204,31 @@ public class OOJTranslator {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean hasMore() {
             return nextToken != null;
         }
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public long tokensPassed() {
             return tokensPassed;
         }
+
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String current() {
             return currentToken;
         }
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String advance() {
             if (nextToken == null)

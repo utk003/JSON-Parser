@@ -16,7 +16,7 @@ public class Biome {
         return color + "\t" + height + "\t" + climate + "\t" + weights;
     }
 
-    public static void prepareForJSON(OOJParser exchanger) {
+    public static void prepareForJSON(OOJParser exchanger) throws NoSuchMethodException {
         exchanger.storeArrayTransformer(Color.class, Biome.class, "initializeColorFromJSON", int.class, int.class, int.class);
         exchanger.storeArrayTransformer(HeightRange.class, Biome.class, "initializeHeightRangeFromJSON", double.class, double.class);
     }

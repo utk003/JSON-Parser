@@ -30,45 +30,89 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * A {@link JSONValue} that represents a JSON number.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ */
 public class JSONNumber extends JSONValue {
+    /**
+     * A publicly accessible reference to the {@code Number} this {@code JSONNumber} represents.
+     */
     public final Number NUMBER;
 
+    /**
+     * Creates a {@code JSONNumber} from the given {@code String} and with the given path
+     *
+     * @param s    The {@code String} form of the number this {@code JSONNumber} represents
+     * @param path This node's path in the JSON tree
+     */
     public JSONNumber(String s, String path) {
         this(s.contains("e") || s.contains("E") || s.contains(".") ? (Number) Double.parseDouble(s) : (Number) Long.parseLong(s), path);
     }
+    /**
+     * Creates a {@code JSONNumber} from the given {@code Number} and with the given path
+     *
+     * @param val  The {@code Number} this {@code JSONNumber} represents
+     * @param path This node's path in the JSON tree
+     */
     public JSONNumber(Number val, String path) {
         super(ValueType.NUMBER, path);
         NUMBER = val;
     }
 
-    public Number getNumber() {
-        return NUMBER;
-    }
-
+    /**
+     * Parses a {@code JSONNumber} from the given {@link Scanner}.
+     * <p>
+     * The created {@code JSONNumber} will have the specified path.
+     *
+     * @param s    The input source {@code Scanner}
+     * @param path The {@code JSONNumber}'s path in the JSON tree
+     * @return The newly created {@code JSONNumber}
+     * @see JSONValue#parseJSON(Scanner)
+     * @see JSONValue#parseJSON(Scanner, String)
+     */
     static JSONNumber parseNumber(Scanner s, String path) {
         return new JSONNumber(s.current(), path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
         return index == tokenizedPath.length ? Collections.singleton(this) : Collections.emptySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void print(PrintStream out, int depth) {
         outputString(out, "" + NUMBER);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return NUMBER.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof JSONNumber && NUMBER.equals(((JSONNumber) obj).NUMBER);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "" + NUMBER;

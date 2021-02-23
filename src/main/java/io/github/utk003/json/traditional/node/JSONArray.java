@@ -30,43 +30,91 @@ import io.github.utk003.util.data.immutable.ImmutablePair;
 import java.io.PrintStream;
 import java.util.*;
 
+/**
+ * A {@link JSONValue} that represents a JSON array.
+ * <p>
+ * This class also extends {@link JSONStorageElement} with
+ * a parameter type of {@code Integer}.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ * @see JSONStorageElement
+ */
 public class JSONArray extends JSONValue implements JSONStorageElement<Integer> {
     private final List<JSONValue> ELEMENTS = new ArrayList<>();
 
+    /**
+     * Creates a new {@code JSONArray} with the specified path in the JSON tree.
+     *
+     * @param path This node's path in the JSON tree
+     */
     public JSONArray(String path) {
         super(ValueType.ARRAY, path);
     }
+    /**
+     * Creates a new {@code JSONArray} with the specified path in the JSON tree
+     * and the specified array of {@link JSONValue}s as this array's elements.
+     *
+     * @param elements This array's elements
+     * @param path     This node's path in the JSON tree
+     */
     public JSONArray(JSONValue[] elements, String path) {
         this(path);
         ELEMENTS.addAll(Arrays.asList(elements));
     }
+    /**
+     * Creates a new {@code JSONArray} with the specified path in the JSON tree
+     * and the specified {@code List} of {@link JSONValue}s as this array's elements.
+     *
+     * @param elements This array's elements
+     * @param path     This node's path in the JSON tree
+     */
     public JSONArray(List<JSONValue> elements, String path) {
         this(path);
         ELEMENTS.addAll(elements);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int numElements() {
         return ELEMENTS.size();
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean isEmpty() {
         return ELEMENTS.isEmpty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void modifyElement(Integer index, JSONValue obj) {
         if (index == null || index == numElements()) ELEMENTS.add(obj);
         else ELEMENTS.set(index, obj);
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JSONValue getElement(Integer index) {
         return ELEMENTS.get(index);
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> getElements() {
         return Collections.unmodifiableList(ELEMENTS);
     }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired() {
         ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
@@ -77,6 +125,17 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
         return pair;
     }
 
+    /**
+     * Parses a {@code JSONArray} from the given {@link Scanner}.
+     * <p>
+     * The created {@code JSONArray} will have the specified path.
+     *
+     * @param s    The input source {@code Scanner}
+     * @param path The {@code JSONArray}'s path in the JSON tree
+     * @return The newly created {@code JSONArray}
+     * @see JSONValue#parseJSON(Scanner)
+     * @see JSONValue#parseJSON(Scanner, String)
+     */
     static JSONArray parseArray(Scanner s, String path) {
         JSONArray obj = new JSONArray(path);
         int i = 0;
@@ -89,6 +148,9 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
         return obj;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
         if (index == tokenizedPath.length)
@@ -110,6 +172,9 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
         return elements;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void print(PrintStream out, int depth) {
         depth++;
@@ -123,24 +188,32 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
             if (++count != total)
                 outputStringWithNewLine(out, ",");
             else
-                outputStringWithNewLine(out);
+                outputNewLine(out);
         }
 
         depth--;
         outputString(out, "]", depth);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return ELEMENTS.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof JSONArray && ELEMENTS.equals(((JSONArray) obj).ELEMENTS);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

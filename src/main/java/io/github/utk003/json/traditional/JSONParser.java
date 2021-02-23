@@ -35,31 +35,94 @@ import java.util.Stack;
 import static io.github.utk003.json.traditional.node.JSONValue.ROOT_PATH;
 
 /**
- * A parser for creating JSON trees with {@link JSONValue} nodes
- * from some form of {@link Scanner} or {@code Scanner}-accepted
- * input format.
+ * A parser for creating JSON trees with {@link JSONValue} nodes from
+ * some form of {@link Scanner} or {@code Scanner}-accepted input format.
  * <p>
+ * This parser provides both recursive and non-recursive implementations
+ * for parsing JSON. Both are roughly equivalent in terms of speed.
+ * <p>
+ * For class-based OOJ parsing rather than tree-based parsing, check out the
+ * {@link io.github.utk003.json.ooj} package.
  *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ * @see Scanner
+ * @see io.github.utk003.json.ooj
  */
 public class JSONParser {
+    /**
+     * Parses a {@link JSONValue} recursively from the given {@link InputStream}.
+     * <p>
+     * This method's implementation is provided by {@link JSONValue#parseJSON(Scanner)}.
+     *
+     * @param source The input source for the JSON
+     * @return The parsed {@code JSONValue} tree root
+     * @see JSONValue#parseJSON(Scanner)
+     * @see io.github.utk003.json.ooj.OOJParser#parseRecursive(InputStream, Class)
+     */
     public static JSONValue parseRecursive(InputStream source) {
         return JSONValue.parseJSON(new JSONScanner(source));
     }
+    /**
+     * Parses a {@link JSONValue} recursively from the given {@link Scanner}.
+     * <p>
+     * This method directly wraps {@link JSONValue#parseJSON(Scanner)}.
+     *
+     * @param scanner The input source for the JSON as a {@code Scanner}
+     * @return The parsed {@code JSONValue} tree root
+     * @see JSONValue#parseJSON(Scanner)
+     * @see io.github.utk003.json.ooj.OOJParser#parseRecursive(Scanner, Class)
+     */
     public static JSONValue parseRecursive(Scanner scanner) {
         if (scanner.tokensPassed() == 0) scanner.advance();
-        Verify.requireTrue(scanner.tokensPassed() == 1);
+        Verify.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
         return JSONValue.parseJSON(scanner);
     }
 
+    /**
+     * Parses a {@link JSONValue} non-recursively from the given {@link InputStream}.
+     * <p>
+     * This method's implementation is provided internally using {@link Stack}s to
+     * perform the same functionality as Java's internal method-call stack.
+     * <p>
+     * Non-recursive parsing may improve speeds slightly over recursive-parsing due to
+     * fewer object instantiations, fewer garbage collections, and fewer method calls.
+     *
+     * @param source The input source for the JSON
+     * @return The parsed {@code JSONValue} tree root
+     * @see io.github.utk003.json.ooj.OOJParser#parseNonRecursive(InputStream, Class)
+     */
     public static JSONValue parseNonRecursive(InputStream source) {
         return parseNonRecursiveHelper(new JSONScanner(source));
     }
+    /**
+     * Parses a {@link JSONValue} non-recursively from the given {@link Scanner}.
+     * <p>
+     * This method's implementation is provided internally using {@link Stack}s to
+     * perform the same functionality as Java's internal method-call stack.
+     * <p>
+     * Non-recursive parsing may improve speeds slightly over recursive-parsing due to
+     * fewer object instantiations, fewer garbage collections, and fewer method calls.
+     *
+     * @param scanner The input source for the JSON as a {@code Scanner}
+     * @return The parsed {@code JSONValue} tree root
+     * @see io.github.utk003.json.ooj.OOJParser#parseNonRecursive(Scanner, Class)
+     */
     public static JSONValue parseNonRecursive(Scanner scanner) {
         if (scanner.tokensPassed() == 0) scanner.advance();
-        Verify.requireTrue(scanner.tokensPassed() == 1);
+        Verify.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
         return parseNonRecursiveHelper(scanner);
     }
 
+    /**
+     * The non-recursive JSON parsing helper method
+     *
+     * @param scanner The input source as a {@link Scanner}
+     * @return The parsed {@link JSONValue} tree root
+     * @see #parseNonRecursive(InputStream)
+     * @see #parseNonRecursive(Scanner)
+     */
     private static JSONValue parseNonRecursiveHelper(Scanner scanner) {
         Stack<JSONValue> stack = new Stack<>();
         Stack<String> strStack = new Stack<>(), pathTracker = new Stack<>();
@@ -117,6 +180,13 @@ public class JSONParser {
         return stack.peek();
     }
 
+    /**
+     * Returns a {@link JSONValue} of the type specified by the {@code token} parameter.
+     *
+     * @param token The token specifying the element JSON type
+     * @param path  The path of this element in the JSON tree
+     * @return The newly constructed {@code JSONValue} element
+     */
     private static JSONValue getElement(String token, String path) {
         char c = token.charAt(0);
         switch (c) {

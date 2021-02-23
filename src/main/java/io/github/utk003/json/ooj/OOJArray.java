@@ -24,6 +24,23 @@ SOFTWARE.
 
 package io.github.utk003.json.ooj;
 
+/**
+ * A template interface that can be extended by any class that
+ * wishes to represent a JSON array for class-based OOJ JSON parsing.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see OOJParser
+ */
 public interface OOJArray {
+    /**
+     * Gets the element at the specified index, and throws an
+     * {@link ArrayIndexOutOfBoundsException} if the index is out of bounds.
+     *
+     * @param index The index to get the element from
+     * @param <T>   An arbitrary type, determined by the variable which accepts the return value
+     * @return The element at the specified index
+     * @throws ArrayIndexOutOfBoundsException If the index is out of bounds
+     */
     <T> T get(int index);
 }

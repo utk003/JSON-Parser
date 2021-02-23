@@ -31,10 +31,29 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+/**
+ * A {@link JSONValue} that represents a JSON string.
+ *
+ * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
+ * @version February 23, 2021
+ * @see JSONValue
+ */
 public class JSONString extends JSONValue {
+    /**
+     * A publicly accessible reference to the {@code String} this {@code JSONString} represents.
+     */
     public final String STRING;
+    /**
+     * A private copy of the original string (without escaped character substitutions, etc.)
+     */
     private final String ORIGINAL;
 
+    /**
+     * Creates a {@code JSONString} from the given {@code String} and with the given path
+     *
+     * @param str  The {@code String} this {@code JSONString} represents
+     * @param path This node's path in the JSON tree
+     */
     public JSONString(String str, String path) {
         super(ValueType.STRING, path);
 
@@ -42,7 +61,15 @@ public class JSONString extends JSONValue {
         STRING = preprocess(str);
     }
 
-    public static String preprocess(String s) {
+    /**
+     * Processes the input {@code String} to replace
+     * escaped characters, unicode characters, and more
+     *
+     * @param s The original string
+     * @return The processed string
+     * @throws RuntimeException If the string has invalid escaped characters
+     */
+    private static String preprocess(String s) {
         Iterator<Integer> chars = s.chars().iterator();
         StringBuilder builder = new StringBuilder();
 
@@ -92,10 +119,26 @@ public class JSONString extends JSONValue {
         return builder.toString();
     }
 
+    /**
+     * Converts the given 4 characters into a single unicode character.
+     *
+     * @param c1 Character 1
+     * @param c2 Character 2
+     * @param c3 Character 3
+     * @param c4 Character 4
+     * @return The single unicode character equivalent to {@code \\u<c1><c2><c3><c4>}
+     */
     private static char hexChar(char c1, char c2, char c3, char c4) {
         return (char) (4096 * hex(c1) + 256 * hex(c2) + 16 * hex(c3) + hex(c4));
     }
 
+    /**
+     * Converts the given character into an integer between 0 and 15, inclusive.
+     *
+     * @param c The input character
+     * @return The integer equivalent from the hexadecimal to decimal translation
+     * @throws IllegalArgumentException If the argument is not an alphanumeric character
+     */
     private static int hex(char c) {
         if ('0' <= c && c <= '9')
             return c - '0';
@@ -106,20 +149,33 @@ public class JSONString extends JSONValue {
         throw new IllegalArgumentException("'" + c + "' is not a valid hex character");
     }
 
-    public String getString() {
-        return STRING;
-    }
-
+    /**
+     * Parses a {@code JSONString} from the given {@link Scanner}.
+     * <p>
+     * The created {@code JSONString} will have the specified path.
+     *
+     * @param s    The input source {@code Scanner}
+     * @param path The {@code JSONString}'s path in the JSON tree
+     * @return The newly created {@code JSONString}
+     * @see JSONValue#parseJSON(Scanner)
+     * @see JSONValue#parseJSON(Scanner, String)
+     */
     static JSONString parseString(Scanner s, String path) {
         String token = s.current();
         return new JSONString(token.substring(1, token.length() - 1), path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<JSONValue> findElements(PathTrace[] tokenizedPath, int index) {
         return index == tokenizedPath.length ? Collections.singleton(this) : Collections.emptySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void print(PrintStream out, int depth) {
         outputString(out, "\"");
@@ -127,16 +183,25 @@ public class JSONString extends JSONValue {
         outputString(out, "\"");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return STRING.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof JSONString && STRING.equals(((JSONString) obj).STRING);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "\"" + STRING + "\"";
