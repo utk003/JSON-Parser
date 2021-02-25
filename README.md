@@ -39,4 +39,4 @@ Although not the fastest library around, this library does provide significant s
 
 ## How to Use
 For a tree-based, class-free JSON parsing approach, use `io.github.utk003.json.traditional.JSONParser`.\
-For an OOJ approach instead, use `io.github.utk003.json.ooj.OOJParser` instead.
+For an OOJ approach, use `io.github.utk003.json.ooj.OOJParser` instead.
