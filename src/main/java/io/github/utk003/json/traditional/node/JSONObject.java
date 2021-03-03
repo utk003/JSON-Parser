@@ -26,7 +26,7 @@ package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
 import io.github.utk003.util.data.immutable.ImmutablePair;
-import io.github.utk003.util.misc.Verify;
+import io.github.utk003.util.misc.Verifier;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -125,7 +125,7 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
                 break;
 
             // skip colon (:)
-            Verify.requireTrue(s.advance().equals(":"));
+            Verifier.requireMatch(s.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
 
             s.advance(); // load first token of value
             obj.ELEMENTS.put(

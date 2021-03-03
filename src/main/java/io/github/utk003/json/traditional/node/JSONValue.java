@@ -25,7 +25,7 @@ SOFTWARE.
 package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.util.misc.Verify;
+import io.github.utk003.util.misc.Verifier;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -158,7 +158,7 @@ public abstract class JSONValue {
          *              otherwise, the argument is parsed into an {@code int} first
          */
         private PathTrace(String key, boolean isKey) {
-            Verify.requireNotNull(key);
+            Verifier.requireNotNull(key, "PathTrace constructor cannot accept a null key");
 
             if (isKey) {
                 INDEX = -1;

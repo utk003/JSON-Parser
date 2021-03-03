@@ -7,8 +7,8 @@
     <groupId>io.github.utk003</groupId>
     <artifactId>json-library</artifactId>
     <name>JSON Library</name>
-    <version>1.1.0</version>
-    <url>https://utk003.github.io/JSON-Parser/javadoc/1.1.0</url>
+    <version>1.2.0</version>
+    <url>https://utk003.github.io/JSON-Parser/javadoc/1.2.0</url>
     <packaging>jar</packaging>
 
     <properties>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>io.github.utk003</groupId>
             <artifactId>utilities-library</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
 </project>

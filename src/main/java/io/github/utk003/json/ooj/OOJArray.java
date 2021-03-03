@@ -27,6 +27,11 @@ package io.github.utk003.json.ooj;
 /**
  * A template interface that can be extended by any class that
  * wishes to represent a JSON array for class-based OOJ JSON parsing.
+ * <p>
+ * In order to use this interface effectively in conjunction with the
+ * {@link OOJParser} class, any implementing class should define instance
+ * fields with names starting from {@code element0} and going up to
+ * {@code element<N-1>} (for an array of length {@code N}).
  *
  * @author Utkarsh Priyam (<a href="https://github.com/utk003" target="_top">utk003</a>)
  * @version February 23, 2021
@@ -34,7 +39,7 @@ package io.github.utk003.json.ooj;
  */
 public interface OOJArray {
     /**
-     * Gets the element at the specified index, and throws an
+     * Gets the element at the specified index and throws an
      * {@link ArrayIndexOutOfBoundsException} if the index is out of bounds.
      *
      * @param index The index to get the element from

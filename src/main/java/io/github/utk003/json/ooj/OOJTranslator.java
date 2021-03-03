@@ -28,7 +28,7 @@ import io.github.utk003.json.scanner.Scanner;
 import io.github.utk003.json.traditional.node.JSONStorageElement;
 import io.github.utk003.json.traditional.node.JSONValue;
 import io.github.utk003.util.data.immutable.ImmutablePair;
-import io.github.utk003.util.misc.Verify;
+import io.github.utk003.util.misc.Verifier;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -179,7 +179,10 @@ public class OOJTranslator {
             JSONValue json = jsonTop.getFirst();
             if (json.TYPE == JSONValue.ValueType.OBJECT || json.TYPE == JSONValue.ValueType.ARRAY) {
                 ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> keyJSONPair = ((JSONStorageElement<?>) json).getElementsPaired();
-                Verify.requireTrue(keyJSONPair.FIRST.size() == keyJSONPair.SECOND.size());
+                Verifier.requireMatch(
+                        keyJSONPair.FIRST.size(), keyJSONPair.SECOND.size(),
+                        "JSONStorageElement data mismatch: number of keys doesn't match number of JSON child nodes"
+                );
 
                 jsonTop = keyJSONPair.SECOND;
                 keysTop = keyJSONPair.FIRST;

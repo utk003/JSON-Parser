@@ -3,35 +3,46 @@ package io.github.utk003.json.ooj.classes;
 import io.github.utk003.json.ooj.OOJParser;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Biome {
-    public Color color;
+    public final Color RENDER_COLOR;
 
-    public HeightRange height;
-    public Climate climate;
-    public Weights weights;
+    public final HeightRange GENERATION_HEIGHT_RANGE;
+    public final Climate BIOME_CLIMATE;
+    public final Weights GENERATION_WEIGHTS;
+
+    public Biome(Color color, HeightRange heightRange, Climate climate, Weights weights) {
+        RENDER_COLOR = color;
+        GENERATION_HEIGHT_RANGE = heightRange;
+        BIOME_CLIMATE = climate;
+        GENERATION_WEIGHTS = weights;
+    }
 
     @Override
     public String toString() {
-        return color + "\t" + height + "\t" + climate + "\t" + weights;
+        return RENDER_COLOR + "\t" + GENERATION_HEIGHT_RANGE + "\t" + BIOME_CLIMATE + "\t" + GENERATION_WEIGHTS;
     }
 
-    public static void prepareForJSON(OOJParser exchanger) throws NoSuchMethodException {
-        exchanger.storeArrayTransformer(Color.class, Biome.class, "initializeColorFromJSON", int.class, int.class, int.class);
-        exchanger.storeArrayTransformer(HeightRange.class, Biome.class, "initializeHeightRangeFromJSON", double.class, double.class);
-    }
+    public static void prepareForJSON(OOJParser parser) throws NoSuchMethodException {
+        Map<String, Class<?>> fieldTypesMap = new HashMap<>();
+        {
+            fieldTypesMap.put("color", Color.class);
+            fieldTypesMap.put("height", HeightRange.class);
+            fieldTypesMap.put("climate", Climate.class);
+            fieldTypesMap.put("weights", Weights.class);
+        }
+        parser.storeObjectTransformerConstructor(Biome.class, fieldTypesMap, new String[]{"color", "height", "climate", "weights"});
 
-    private static Color initializeColorFromJSON(int r, int g, int b) {
-        return new Color(r, g, b);
-    }
-    private static HeightRange initializeHeightRangeFromJSON(double low, double high) {
-        return new HeightRange(low, high);
+        parser.storeArrayTransformerConstructor(Color.class, new Class<?>[]{int.class, int.class, int.class}, false);
+        parser.storeArrayTransformerConstructor(HeightRange.class, new Class<?>[]{int.class, int.class}, false);
     }
 
     public static class HeightRange {
-        public final double LOW, HIGH;
+        public final int LOW, HIGH;
 
-        public HeightRange(double low, double high) {
+        public HeightRange(int low, int high) {
             LOW = low;
             HIGH = high;
         }
@@ -43,7 +54,10 @@ public class Biome {
     }
 
     public static class Climate {
-        public double temperature, humidity;
+        public final double temperature, humidity;
+        public Climate() {
+            temperature = humidity = Double.NaN;
+        }
 
         @Override
         public String toString() {
@@ -52,7 +66,10 @@ public class Biome {
     }
 
     public static class Weights {
-        public double relative, variants;
+        public final double relative, variants;
+        public Weights() {
+            relative = variants = Double.NaN;
+        }
 
         @Override
         public String toString() {

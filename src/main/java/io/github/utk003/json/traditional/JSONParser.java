@@ -27,7 +27,7 @@ package io.github.utk003.json.traditional;
 import io.github.utk003.json.scanner.JSONScanner;
 import io.github.utk003.json.scanner.Scanner;
 import io.github.utk003.json.traditional.node.*;
-import io.github.utk003.util.misc.Verify;
+import io.github.utk003.util.misc.Verifier;
 
 import java.io.InputStream;
 import java.util.Stack;
@@ -76,7 +76,7 @@ public class JSONParser {
      */
     public static JSONValue parseRecursive(Scanner scanner) {
         if (scanner.tokensPassed() == 0) scanner.advance();
-        Verify.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
+        Verifier.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
         return JSONValue.parseJSON(scanner);
     }
 
@@ -111,7 +111,7 @@ public class JSONParser {
      */
     public static JSONValue parseNonRecursive(Scanner scanner) {
         if (scanner.tokensPassed() == 0) scanner.advance();
-        Verify.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
+        Verifier.requireTrue(scanner.hasMore(), "The given scanner cannot be empty");
         return parseNonRecursiveHelper(scanner);
     }
 
