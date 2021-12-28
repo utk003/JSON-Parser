@@ -25,7 +25,7 @@ SOFTWARE.
 package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.util.data.immutable.ImmutablePair;
+import io.github.utk003.util.data.tuple.immutable.ImmutablePair;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -116,10 +116,22 @@ public class JSONArray extends JSONValue implements JSONStorageElement<Integer> 
      * {@inheritDoc}
      */
     @Override
-    public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired() {
-        ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
+    public LinkedList<ImmutablePair<Integer, JSONValue>> getElementsPaired() {
+        LinkedList<ImmutablePair<Integer, JSONValue>> list = new LinkedList<>();
+        int i = 0;
+        for (JSONValue e : ELEMENTS)
+            list.addLast(new ImmutablePair<>(i++, e));
+        return list;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ImmutablePair<LinkedList<Integer>, LinkedList<JSONValue>> getElementsAsPairedLists() {
+        ImmutablePair<LinkedList<Integer>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
+        int i = 0;
         for (JSONValue e : ELEMENTS) {
-            pair.FIRST.addLast(null);
+            pair.FIRST.addLast(i++);
             pair.SECOND.addLast(e);
         }
         return pair;

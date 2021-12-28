@@ -25,7 +25,7 @@ SOFTWARE.
 package io.github.utk003.json.traditional.node;
 
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.util.data.immutable.ImmutablePair;
+import io.github.utk003.util.data.tuple.immutable.ImmutablePair;
 import io.github.utk003.util.misc.Verifier;
 
 import java.io.PrintStream;
@@ -95,7 +95,17 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
      * {@inheritDoc}
      */
     @Override
-    public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired() {
+    public LinkedList<ImmutablePair<String, JSONValue>> getElementsPaired() {
+        LinkedList<ImmutablePair<String, JSONValue>> list = new LinkedList<>();
+        for (Map.Entry<String, JSONValue> e : ELEMENTS.entrySet())
+            list.addLast(new ImmutablePair<>(e.getKey(), e.getValue()));
+        return list;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsAsPairedLists() {
         ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> pair = new ImmutablePair<>(new LinkedList<>(), new LinkedList<>());
         for (Map.Entry<String, JSONValue> e : ELEMENTS.entrySet()) {
             pair.FIRST.addLast(e.getKey());
@@ -125,7 +135,7 @@ public class JSONObject extends JSONValue implements JSONStorageElement<String> 
                 break;
 
             // skip colon (:)
-            Verifier.requireMatch(s.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
+            Verifier.requireEqual(s.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
 
             s.advance(); // load first token of value
             obj.ELEMENTS.put(

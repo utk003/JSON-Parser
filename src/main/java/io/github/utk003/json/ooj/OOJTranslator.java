@@ -27,7 +27,7 @@ package io.github.utk003.json.ooj;
 import io.github.utk003.json.scanner.Scanner;
 import io.github.utk003.json.traditional.node.JSONStorageElement;
 import io.github.utk003.json.traditional.node.JSONValue;
-import io.github.utk003.util.data.immutable.ImmutablePair;
+import io.github.utk003.util.data.tuple.immutable.ImmutablePair;
 import io.github.utk003.util.misc.Verifier;
 
 import java.lang.reflect.InvocationTargetException;
@@ -95,11 +95,13 @@ public class OOJTranslator {
      * @see JSONValue
      */
     public static class JSONValueStreamer implements Scanner {
-        private LinkedList<JSONValue> jsonTop;
-        private LinkedList<String> keysTop;
+        private LinkedList<JSONValue> topJSON;
+        private LinkedList<?> topKeysOrInds;
+        boolean topIsKeyNotIndex;
 
         private final Stack<LinkedList<JSONValue>> JSON = new Stack<>();
-        private final Stack<LinkedList<String>> KEYS = new Stack<>();
+        private final Stack<LinkedList<?>> KEYS_OR_INDS = new Stack<>();
+        private final Stack<Boolean> IS_KEY_NOT_INDEX = new Stack<>();
 
         private static <K> LinkedList<K> getSingletonLinkedList(K element) {
             LinkedList<K> list = new LinkedList<>();
@@ -114,8 +116,9 @@ public class OOJTranslator {
          * @param root The root of the JSON tree to stream
          */
         public JSONValueStreamer(JSONValue root) {
-            JSON.push(jsonTop = getSingletonLinkedList(root));
-            KEYS.push(keysTop = getSingletonLinkedList(JSONValue.ROOT_PATH));
+            JSON.push(topJSON = getSingletonLinkedList(root));
+            KEYS_OR_INDS.push(topKeysOrInds = getSingletonLinkedList(JSONValue.ROOT_PATH));
+            IS_KEY_NOT_INDEX.push(topIsKeyNotIndex = true);
 
             currentToken = advance0();
             nextToken = advance0();
@@ -126,7 +129,7 @@ public class OOJTranslator {
 
         // 0 = nothing so far
         // 1 = returned key
-        // 2 = returned color - ready for recursion into obj
+        // 2 = returned colon - ready for recursion into obj
         // 3 = done with prev - return comma
         private int keyState = 2;
         private final Stack<Integer> KEY_STATES = new Stack<>();
@@ -140,27 +143,31 @@ public class OOJTranslator {
          * @return The next token to be streamed
          */
         private String advance0() {
-            if (jsonTop.isEmpty()) {
+            if (topJSON.isEmpty()) {
                 JSON.pop();
-                KEYS.pop();
+                KEYS_OR_INDS.pop();
+                IS_KEY_NOT_INDEX.pop();
 
                 if (JSON.isEmpty())
                     return null;
 
-                jsonTop = JSON.peek();
-                keysTop = KEYS.peek();
+                boolean oldTopIsKeyNotIndex = topIsKeyNotIndex;
+
+                topJSON = JSON.peek();
+                topKeysOrInds = KEYS_OR_INDS.peek();
+                topIsKeyNotIndex = IS_KEY_NOT_INDEX.peek();
                 keyState = KEY_STATES.pop();
 
-                JSONValue json = jsonTop.removeFirst();
-                keysTop.removeFirst();
+                topJSON.removeFirst();
+                topKeysOrInds.removeFirst();
 
-                return json.TYPE == JSONValue.ValueType.ARRAY ? "]" : "}";
+                return oldTopIsKeyNotIndex ? "}" : "]";
             }
 
             switch (keyState) {
                 case 0:
                     keyState = 1;
-                    return "\"" + keysTop.getFirst() + "\"";
+                    return "\"" + topKeysOrInds.getFirst() + "\"";
                 case 1:
                     keyState = 2;
                     return ":";
@@ -168,7 +175,7 @@ public class OOJTranslator {
                     keyState = 3;
                     break;
                 case 3:
-                    keyState = keysTop.getFirst() != null ? 0 : 2; // !null -> object = 0, null -> array = 2
+                    keyState = topIsKeyNotIndex ? 0 : 2; // !null -> object = 0, null -> array = 2
                     return ",";
 
                 default:
@@ -176,22 +183,22 @@ public class OOJTranslator {
             }
 
             // if here, we need to recurse to the next layer
-            JSONValue json = jsonTop.getFirst();
+            JSONValue json = topJSON.getFirst();
             if (json.TYPE == JSONValue.ValueType.OBJECT || json.TYPE == JSONValue.ValueType.ARRAY) {
-                ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> keyJSONPair = ((JSONStorageElement<?>) json).getElementsPaired();
-                Verifier.requireMatch(
+                ImmutablePair<? extends LinkedList<?>, LinkedList<JSONValue>> keyJSONPair =
+                        ((JSONStorageElement<?>) json).getElementsAsPairedLists();
+                Verifier.requireEqual(
                         keyJSONPair.FIRST.size(), keyJSONPair.SECOND.size(),
                         "JSONStorageElement data mismatch: number of keys doesn't match number of JSON child nodes"
                 );
 
-                jsonTop = keyJSONPair.SECOND;
-                keysTop = keyJSONPair.FIRST;
+                JSON.push(topJSON = keyJSONPair.SECOND);
+                KEYS_OR_INDS.push(topKeysOrInds = keyJSONPair.FIRST);
+                IS_KEY_NOT_INDEX.push(topIsKeyNotIndex = json.TYPE == JSONValue.ValueType.OBJECT);
 
-                JSON.push(jsonTop);
-                KEYS.push(keysTop);
                 KEY_STATES.push(keyState);
 
-                if (json.TYPE == JSONValue.ValueType.OBJECT) {
+                if (topIsKeyNotIndex) {
                     keyState = 0;
                     return "{";
                 } else {
@@ -200,8 +207,8 @@ public class OOJTranslator {
                 }
 
             } else {
-                jsonTop.removeFirst();
-                keysTop.removeFirst();
+                topJSON.removeFirst();
+                topKeysOrInds.removeFirst();
 
                 return json.toString();
             }

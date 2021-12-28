@@ -26,7 +26,7 @@ package io.github.utk003.json.ooj;
 
 import io.github.utk003.json.scanner.JSONScanner;
 import io.github.utk003.json.scanner.Scanner;
-import io.github.utk003.util.data.immutable.ImmutableTriple;
+import io.github.utk003.util.data.tuple.immutable.ImmutableTriple;
 import io.github.utk003.util.misc.Verifier;
 
 import java.io.InputStream;
@@ -156,15 +156,15 @@ public class OOJParser {
      * @param giveAsSingleArray A boolean flag that specifies whether the transformation
      *                          method takes its arguments as an array of {@code Object}s
      *                          or as individual arguments
-     * @throws Verifier.VerificationException If the method name is {@code null} and the created
-     *                                        class type does not equal the method holder class type
-     * @throws NoSuchMethodException          If the specified transformer method or constructor cannot be found
+     * @throws io.github.utk003.util.misc.VerificationException If the method name is {@code null} and the created
+     *                                                          class type does not equal the method holder class type
+     * @throws NoSuchMethodException                            If the specified transformer method or constructor cannot be found
      */
     public void storeArrayTransformer(Class<?> clazz, Class<?> methodHolder, String methodName,
                                       Class<?>[] arrayElementTypes, boolean giveAsSingleArray) throws NoSuchMethodException {
         Executable executable;
         if (methodName == null) {
-            Verifier.requireExactMatch(clazz, methodHolder, "Created class and constructor holder do not match");
+            Verifier.requireExactlyEqual(clazz, methodHolder, "Created class and constructor holder do not match");
             if (giveAsSingleArray)
                 executable = methodHolder.getDeclaredConstructor(Object[].class);
             else
@@ -220,14 +220,14 @@ public class OOJParser {
      * @param jsonObjectFields All of the field identifiers and class types for the transformation
      * @param args             A (possibly {@code null}) array of {@code String}s delineating
      *                         the precise argument order for the transformation method
-     * @throws Verifier.VerificationException If the method name is {@code null} and the created
-     *                                        class type does not equal the method holder class type
-     * @throws NoSuchMethodException          If the specified transformer method or constructor cannot be found
+     * @throws io.github.utk003.util.misc.VerificationException If the method name is {@code null} and the created
+     *                                                          class type does not equal the method holder class type
+     * @throws NoSuchMethodException                            If the specified transformer method or constructor cannot be found
      */
     public void storeObjectTransformer(Class<?> clazz, Class<?> methodHolder, String methodName,
                                        Map<String, Class<?>> jsonObjectFields, String[] args) throws NoSuchMethodException {
         if (methodName == null)
-            Verifier.requireExactMatch(clazz, methodHolder, "Created class and constructor holder do not match");
+            Verifier.requireExactlyEqual(clazz, methodHolder, "Created class and constructor holder do not match");
 
         Executable executable;
         if (args == null) {
@@ -282,8 +282,8 @@ public class OOJParser {
      */
     private static String checkAndTrimString(String str) {
         int len = str.length();
-        Verifier.requireMatch(str.charAt(0), '"', "Malformed JSON String: should begin with a quote (\")");
-        Verifier.requireMatch(str.charAt(len - 1), '"', "Malformed JSON String: should end with a quote (\")");
+        Verifier.requireEqual(str.charAt(0), '"', "Malformed JSON String: should begin with a quote (\")");
+        Verifier.requireEqual(str.charAt(len - 1), '"', "Malformed JSON String: should end with a quote (\")");
         return str.substring(1, len - 1);
     }
 
@@ -443,7 +443,7 @@ public class OOJParser {
      */
     private <T> T parseObject(Scanner scanner, Class<T> clazz)
             throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException {
-        Verifier.requireMatch(scanner.current(), "{", "Malformed JSON Object: should start with a curly brace ({)");
+        Verifier.requireEqual(scanner.current(), "{", "Malformed JSON Object: should start with a curly brace ({)");
         T instance;
 
         ImmutableTriple<Executable, Map<String, Class<?>>, String[]> transformation = OBJECT_TRANSFORMATION_MAP.get(clazz);
@@ -453,7 +453,7 @@ public class OOJParser {
             boolean continueLooping;
             do {
                 String key = checkAndTrimString(scanner.advance());
-                Verifier.requireMatch(scanner.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
+                Verifier.requireEqual(scanner.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
                 scanner.advance(); // load first token of element
 
                 fieldValuesMap.put(key, parseJSONRecursive(scanner, transformation.SECOND.get(key)));
@@ -479,7 +479,7 @@ public class OOJParser {
             boolean continueLooping;
             do {
                 String key = checkAndTrimString(scanner.advance());
-                Verifier.requireMatch(scanner.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
+                Verifier.requireEqual(scanner.advance(), ":", "Malformed JSON Object: key should be followed by a colon (:)");
                 scanner.advance(); // load first token of element
 
                 Field field = clazz.getDeclaredField(key);
@@ -489,7 +489,7 @@ public class OOJParser {
             } while (continueLooping);
         }
 
-        Verifier.requireMatch(scanner.current(), "}", "Malformed JSON Object: should end with a curly brace (})");
+        Verifier.requireEqual(scanner.current(), "}", "Malformed JSON Object: should end with a curly brace (})");
         return instance;
     }
 
@@ -516,7 +516,7 @@ public class OOJParser {
      */
     private <T> T parseArray(Scanner scanner, Class<T> clazz)
             throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException {
-        Verifier.requireMatch(scanner.current(), "[", "Malformed JSON Array: should start with a curly brace ([)");
+        Verifier.requireEqual(scanner.current(), "[", "Malformed JSON Array: should start with a curly brace ([)");
         T instance;
 
         ImmutableTriple<Executable, Class<?>[], Boolean> transformation = ARRAY_TRANSFORMATION_MAP.get(clazz);
@@ -571,7 +571,7 @@ public class OOJParser {
                 Array.set(instance, index++, o);
         }
 
-        Verifier.requireMatch(scanner.current(), "]", "Malformed JSON Array: should end with a curly brace (])");
+        Verifier.requireEqual(scanner.current(), "]", "Malformed JSON Array: should end with a curly brace (])");
         return instance;
     }
 

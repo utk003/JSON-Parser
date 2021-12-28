@@ -24,7 +24,7 @@ SOFTWARE.
 
 package io.github.utk003.json.traditional.node;
 
-import io.github.utk003.util.data.immutable.ImmutablePair;
+import io.github.utk003.util.data.tuple.immutable.ImmutablePair;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -98,5 +98,18 @@ public interface JSONStorageElement<E> {
      *
      * @return This {@code JSONStorageElement}'s children and their keys/indices as a pair of {@code LinkedList}s
      */
-    ImmutablePair<LinkedList<String>, LinkedList<JSONValue>> getElementsPaired();
+    ImmutablePair<LinkedList<E>, LinkedList<JSONValue>> getElementsAsPairedLists();
+    /**
+     * Returns an {@link ImmutablePair} of {@code LinkedList}s that
+     * hold all of this {@code JSONStorageElement}'s {@code JSONValue}
+     * children as well as their corresponding keys/indices.
+     * <p>
+     * This method is particularly useful in transforming a JSON tree
+     * back into a {@link io.github.utk003.json.scanner.Scanner} in
+     * a single pass. Check out {@link io.github.utk003.json.ooj.OOJTranslator.JSONValueStreamer}
+     * for more details.
+     *
+     * @return This {@code JSONStorageElement}'s children and their keys/indices paired in a {@code LinkedList}
+     */
+    LinkedList<ImmutablePair<E, JSONValue>> getElementsPaired();
 }
